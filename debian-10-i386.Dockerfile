@@ -23,6 +23,6 @@ RUN /opt/tools/tools.sh install_cmake                   &&  \
     /opt/tools/tools.sh build_and_install_python        &&  \
     /opt/tools/tools.sh build_and_install_jsonc
 
-RUN useradd rnpuser
-RUN echo -e "rnpuser\tALL=(ALL)\tNOPASSWD:\tALL" > /etc/sudoers.d/rnpuser
-RUN echo -e "rnpuser\tsoft\tnproc\tunlimited\n" > /etc/security/limits.d/30-rnpuser.conf
+#RUN useradd rnpuser
+#RUN echo -e "rnpuser\tALL=(ALL)\tNOPASSWD:\tALL" > /etc/sudoers.d/rnpuser
+#RUN echo -e "rnpuser\tsoft\tnproc\tunlimited\n" > /etc/security/limits.d/30-rnpuser.conf
