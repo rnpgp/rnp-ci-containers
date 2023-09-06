@@ -1,0 +1,28 @@
+name: build-debian-containers
+
+on:
+  push:
+    branches: [main, initial-development]
+  pull_request:
+
+concurrency:
+  group: '${{ github.workflow }}-${{ github.job }}-${{ github.head_ref || github.ref_name }}'
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    name: ${{ matrix.image.container }} [CC ${{ matrix.env.CC }}; backend ${{ matrix.image.backend }}; GnuPG stable]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        image:
+#          - { container: 'i386/debian:11',  cpu: 'i386',   arch: 'ia32',   backend: 'botan'   }
+#          - { container: 'i386/debian:11',  cpu: 'i386',   arch: 'ia32',   backend: 'openssl' }
+#          - { container: 'amd64/debian:11', cpu: 'x86_64', arch: 'x64',    backend: 'botan'   }
+#          - { container: 'amd64/debian:11', cpu: 'x86_64', arch: 'x64',    backend: 'openssl' }
+          - { container: 'debian-10-i386',  cpu: 'i386',   arch: 'ia32',   backend: 'botan'   }
+
+    steps:
+      - name: Docker build
+        run: docker build -t maxirmx/ci-rnp-${{ matrix.container }} ${{ matrix.container }}.Dockerfile
