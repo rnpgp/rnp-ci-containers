@@ -25,4 +25,4 @@ jobs:
 
     steps:
       - name: Docker build
-        run: docker build -t maxirmx/ci-rnp-${{ matrix.container }} ${{ matrix.container }}.Dockerfile
+        run: docker build -t maxirmx/ci-rnp-${{ matrix.image.container }} ${{ matrix.image.container }}.Dockerfile
