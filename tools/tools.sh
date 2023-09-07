@@ -31,7 +31,6 @@ run_in_python_venv() {
   )
 }
 
-
 install_cmake() {
   echo "Running install_cmake version ${CMAKE_VERSION} for ${ARCH}"
   local cmake_install=${LOCAL_BUILDS}/cmake

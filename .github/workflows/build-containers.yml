@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   tests:
-    name: ${{ matrix.image.container }} [CC ${{ matrix.env.CC }}; backend ${{ matrix.image.backend }}; GnuPG stable]
+    name: ${{ matrix.image.container }} [CC ${{ matrix.image.container }}; GnuPG stable]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
