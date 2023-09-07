@@ -4,7 +4,8 @@
 : "${JSONC_VERSION:=0.12.1}"
 : "${PYTHON_VERSION:=3.9.2}"
 : "${AUTOMAKE_VERSION:=1.16.4}"
-: "${CMAKE_VERSION=3.20.6-2}"
+: "${CMAKE_VERSION:=3.20.6-2}"
+: "${GPG_VERSION:=stable}"
 : "${MAKE_PARALLEL:=4}"
 
 is_use_static_dependencies() {
@@ -37,7 +38,7 @@ install_cmake() {
   mkdir -p ${cmake_install}
   pushd ${cmake_install}
   wget -nv https://github.com/xpack-dev-tools/cmake-xpack/releases/download/v${CMAKE_VERSION}/xpack-cmake-${CMAKE_VERSION}-linux-${ARCH}.tar.gz
-  tar -zxf xpack-cmake-${CMAKE_VERSION}-linux-${ARCH}.tar.gz --directory /usr/local --strip-components=1 --skip-old-files
+  tar -zxf xpack-cmake-${CMAKE_VERSION}-linux-${ARCH}.tar.gz --directory /usr --strip-components=1 --skip-old-files
   popd
   rm -rf ${cmake_install}
 }
@@ -48,7 +49,7 @@ build_and_install_python() {
   pushd "${python_build}"
   wget -O python.tar.xz https://www.python.org/ftp/python/"${PYTHON_VERSION}"/Python-"${PYTHON_VERSION}".tar.xz
   tar -xf python.tar.xz --strip 1
-  ./configure --enable-optimizations --prefix=/usr/local
+  ./configure --enable-optimizations --prefix=/usr
   make -j"${MAKE_PARALLEL}" && sudo make install
   ensure_symlink_to_target /usr/bin/python3 /usr/bin/python
   popd
@@ -62,7 +63,7 @@ build_and_install_automake() {
   pushd "${automake_build}"
   wget -O automake.tar.xz "https://ftp.gnu.org/gnu/automake/automake-${AUTOMAKE_VERSION}.tar.xz"
   tar -xf automake.tar.xz --strip 1
-  ./configure --enable-optimizations --prefix=/usr/local
+  ./configure --enable-optimizations --prefix=/usr
   make -j"${MAKE_PARALLEL}"
   sudo make install
   popd
@@ -84,7 +85,7 @@ build_and_install_jsonc() {
         "--enable-$(is_use_static_dependencies && echo 'static' || echo 'shared')"
         "--disable-$(is_use_static_dependencies && echo 'shared' || echo 'static')"
     )
-    env CFLAGS="-fPIC -fno-omit-frame-pointer -Wno-implicit-fallthrough -g" ./configure ${cpuparam+"${cpuparam[@]}"} "${build_type_args[@]}" --prefix=/usr/local
+    env CFLAGS="-fPIC -fno-omit-frame-pointer -Wno-implicit-fallthrough -g" ./configure ${cpuparam+"${cpuparam[@]}"} "${build_type_args[@]}" --prefix=/usr
     make -j"${MAKE_PARALLEL}"
     sudo make install
     popd
@@ -92,28 +93,27 @@ build_and_install_jsonc() {
 }
 
 build_and_install_botan() {
+  echo "Running build_and_install_botan version ${BOTAN_VERSION}"
+
+  local botan_v=${BOTAN_VERSION::1}
   local botan_build=${LOCAL_BUILDS}/botan
 
   git clone --depth 1 --branch "${BOTAN_VERSION}" https://github.com/randombit/botan "${botan_build}"
+  pushd "${botan_build}"
 
   local osparam=()
   local cpuparam=()
-  local run=run
   local osslparam=()
   local modules=""
   [[ "${botan_v}" == "2" ]] && osslparam+=("--without-openssl") && modules=$(<ci/botan-modules tr '\n' ',')
   [[ "${botan_v}" == "3" ]] && modules=$(<ci/botan3-modules tr '\n' ',')
-
-  pushd "${botan_build}"
-
-  local extra_cflags="-fPIC"
 
   [[ -z "$CPU" ]] || cpuparam=(--cpu="$CPU" --disable-cc-tests)
 
   local build_target="shared,cli"
   is_use_static_dependencies && build_target="static,cli"
 
-  run_in_python_venv ./configure.py --prefix=/usr/local --with-debug-info --extra-cxxflags="-fno-omit-frame-pointer -fPIC" \
+  run_in_python_venv ./configure.py --prefix=/usr --with-debug-info --extra-cxxflags="-fno-omit-frame-pointer -fPIC" \
       ${osparam+"${osparam[@]}"} ${cpuparam+"${cpuparam[@]}"} --without-documentation ${osslparam+"${osslparam[@]}"} --build-targets="${build_target}" \
       --minimized-build --enable-modules="$modules"
   make -j"${MAKE_PARALLEL}"
@@ -121,5 +121,121 @@ build_and_install_botan() {
   popd
   rm -rf "${botan_build}"
 }
+
+_install_gpg() {
+  local VERSION_SWITCH=$1
+  local NPTH_VERSION=$2
+  local LIBGPG_ERROR_VERSION=$3
+  local LIBGCRYPT_VERSION=$4
+  local LIBASSUAN_VERSION=$5
+  local LIBKSBA_VERSION=$6
+  local PINENTRY_VERSION=$7
+  local GNUPG_VERSION=$8
+
+  local gpg_build="$PWD"
+  # shellcheck disable=SC2153
+  local gpg_install="/usr/local"
+  git clone --depth 1 https://github.com/rnpgp/gpg-build-scripts
+  pushd gpg-build-scripts
+
+  local cpuparam=()
+  [[ -z "$CPU" ]] || cpuparam=(--build="$CPU")
+
+  local configure_opts=(
+      "--prefix=/usr/local"
+      "--with-libgpg-error-prefix=${gpg_install}"
+      "--with-libassuan-prefix=${gpg_install}"
+      "--with-libgcrypt-prefix=${gpg_install}"
+      "--with-ksba-prefix=${gpg_install}"
+      "--with-npth-prefix=${gpg_install}"
+      "--disable-doc"
+      "--enable-pinentry-curses"
+      "--disable-pinentry-emacs"
+      "--disable-pinentry-gtk2"
+      "--disable-pinentry-gnome3"
+      "--disable-pinentry-qt"
+      "--disable-pinentry-qt4"
+      "--disable-pinentry-qt5"
+      "--disable-pinentry-tqt"
+      "--disable-pinentry-fltk"
+      "--enable-maintainer-mode"
+      "--enable-install-gpg-error-config"
+      ${cpuparam+"${cpuparam[@]}"}
+    )
+
+  local common_args=(
+      --force-autogen
+#      --verbose		commented out to speed up recurring CI builds
+#      --trace                  uncomment if you are debugging CI
+      --build-dir "${gpg_build}"
+      --configure-opts "${configure_opts[*]}"
+  )
+
+  # For "tee"-ing to /etc/ld.so.conf.d/gpg-from_build_scripts.conf from option `--ldconfig`
+  if [[ "${SUDO}" = "sudo" && "${DIST}" != "ubuntu" ]]; then
+    common_args+=(--sudo)
+  fi
+
+  # Workaround to correctly build pinentry on the latest GHA on macOS. Most likely there is a better solution.
+  export CFLAGS="-D_XOPEN_SOURCE_EXTENDED"
+  export CXXFLAGS="-D_XOPEN_SOURCE_EXTENDED"
+
+  # Always build GnuPG with gcc, even if we are testing clang
+  # ref https://github.com/rnpgp/rnp/issues/1669
+
+  for component in libgpg-error:$LIBGPG_ERROR_VERSION \
+                   libgcrypt:$LIBGCRYPT_VERSION \
+                   libassuan:$LIBASSUAN_VERSION \
+                   libksba:$LIBKSBA_VERSION \
+                   npth:$NPTH_VERSION \
+                   pinentry:$PINENTRY_VERSION \
+                   gnupg:$GNUPG_VERSION; do
+    local name="${component%:*}"
+    local version="${component#*:}"
+
+  # Always build GnuPG with gcc, even if we are testing clang
+  # ref https://github.com/rnpgp/rnp/issues/1669
+
+    env CC="gcc" CXX="g++" ./install_gpg_component.sh         \
+                              --component-name "$name"        \
+                              --"$VERSION_SWITCH" "$version"  \
+                              "${common_args[@]}"
+  done
+  popd
+}
+
+
+build_and_install_gpg() {
+  echo "Running build_and_install_gpg version ${GPG_VERSION}"
+
+  local gpg_build=${LOCAL_BUILDS}/gpg
+  mkdir -p "${gpg_build}"
+  pushd "${gpg_build}"
+
+    # shellcheck disable=SC2153
+  case "${GPG_VERSION}" in
+    stable)
+      #                              npth libgpg-error libgcrypt libassuan libksba pinentry gnupg
+      _install_gpg component-version 1.6  1.46         1.10.1     2.5.5     1.6.3  1.2.1    2.4.0
+      ;;
+    lts)
+      #                              npth libgpg-error libgcrypt libassuan libksba pinentry gnupg
+      _install_gpg component-version 1.6  1.46         1.8.10     2.5.5     1.6.3   1.2.1   2.2.41
+      ;;
+    beta)
+      #                              npth    libgpg-error libgcrypt libassuan libksba pinentry gnupg
+      _install_gpg component-git-ref 2501a48 f73605e      d9c4183   909133b   3df0cd3 0e2e53c  c6702d7
+      ;;
+    "2.3.1")
+      #                              npth libgpg-error libgcrypt libassuan libksba pinentry gnupg
+      _install_gpg component-version 1.6  1.42         1.9.3     2.5.5     1.6.0   1.1.1    2.3.1
+      ;;
+    *)
+      >&2 echo "\$GPG_VERSION is set to invalid value: ${GPG_VERSION}"
+      exit 1
+  esac
+  popd
+}
+
 
 "$@"
