@@ -13,10 +13,7 @@ ARG CXX=g++
 RUN apt-get update  &&                                                                     \
     apt-get -y install git sudo wget bash software-properties-common                       \
            build-essential gettext libbz2-dev libncurses5-dev libssl-dev                   \
-           python3 python3-venv zlib1g-dev autoconf automake libtool &&                    \
-    wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add - &&             \
-    apt-add-repository "deb http://apt.llvm.org/buster/ llvm-toolchain-buster-10 main" &&  \
-    apt-get install -y clang
+           python3 python3-venv zlib1g-dev autoconf automake libtool
 
 COPY tools /opt/tools
 

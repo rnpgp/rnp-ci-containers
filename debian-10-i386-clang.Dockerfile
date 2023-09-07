@@ -7,8 +7,8 @@ ENV LC_LANG=.UTF-8
 ENV ARCH=ia32
 ENV CPU=i386
 
-ARG CC=gcc
-ARG CXX=g++
+ENV CC=clang
+ENV CXX=clang++
 
 RUN apt-get update  &&                                                                     \
     apt-get -y install git sudo wget bash software-properties-common                       \
