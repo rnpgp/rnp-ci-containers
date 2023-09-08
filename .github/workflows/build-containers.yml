@@ -25,8 +25,8 @@ jobs:
 #          - { container: 'i386/debian:11',  cpu: 'i386',   arch: 'ia32',   backend: 'openssl' }
 #          - { container: 'amd64/debian:11', cpu: 'x86_64', arch: 'x64',    backend: 'botan'   }
 #          - { container: 'amd64/debian:11', cpu: 'x86_64', arch: 'x64',    backend: 'openssl' }
-          - { container: 'debian-10-i386',  cpu: 'i386',   arch: 'ia32',   cc: 'gcc'     }
-          - { container: 'debian-10-i386',  cpu: 'i386',   arch: 'ia32',   cc: 'clang'   }
+          - { container: 'debian-10-i386',  cpu: 'i386',   arch: 'ia32',   cc: 'gcc',   cxx: 'g++'     }
+          - { container: 'debian-10-i386',  cpu: 'i386',   arch: 'ia32',   cc: 'clang', cxx: 'clang++' }
 
     steps:
       - name: Checkout
@@ -47,3 +47,6 @@ jobs:
           push: true
           tags: ghcr.io/maxirmx/ci-rnp-${{ matrix.image.container }}-${{ matrix.image.cc }}
           labels: latest
+          build_args: |
+            CC=${{ matrix.image.cc }}
+            CXX=${{ matrix.image.cxx }}
