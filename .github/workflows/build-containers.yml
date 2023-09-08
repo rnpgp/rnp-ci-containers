@@ -43,10 +43,10 @@ jobs:
         uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
         with:
           context: .
-          file: ./${{ matrix.image.container }}-${{ matrix.image.cc }}.Dockerfile
+          file: ./${{ matrix.image.container }}.Dockerfile
           push: true
           tags: ghcr.io/maxirmx/ci-rnp-${{ matrix.image.container }}-${{ matrix.image.cc }}
           labels: latest
-          build_args: |
+          build-args: |
             CC=${{ matrix.image.cc }}
             CXX=${{ matrix.image.cxx }}
