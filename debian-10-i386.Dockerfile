@@ -15,7 +15,7 @@ COPY tools /opt/tools
 RUN apt-get update  &&                                                \
     apt-get -y install git sudo wget bash software-properties-common  \
            build-essential gettext libbz2-dev libssl-dev  pkg-config  \
-           zlib1g-dev autoconf automake libtool asciidoctor clang
+           zlib1g-dev autoconf automake libtool asciidoctor clang gpg
 
 # Using system-shipped version of gpg (2.1.2)
 # Otherwise
