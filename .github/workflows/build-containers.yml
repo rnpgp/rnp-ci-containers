@@ -1,0 +1,51 @@
+name: build-debian-containers
+
+on:
+  push:
+    branches: [main, initial-development]
+  pull_request:
+
+concurrency:
+  group: '${{ github.workflow }}-${{ github.job }}-${{ github.head_ref || github.ref_name }}'
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    name: ${{ matrix.image.container }} [CC ${{ matrix.image.cc }}; GnuPG stable]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        image:
+#          - { container: 'i386/debian:11',  cpu: 'i386',   arch: 'ia32',   backend: 'botan'   }
+#          - { container: 'i386/debian:11',  cpu: 'i386',   arch: 'ia32',   backend: 'openssl' }
+#          - { container: 'amd64/debian:11', cpu: 'x86_64', arch: 'x64',    backend: 'botan'   }
+#          - { container: 'amd64/debian:11', cpu: 'x86_64', arch: 'x64',    backend: 'openssl' }
+          - { container: 'debian-10-i386',  cpu: 'i386',   arch: 'ia32',   cc: 'gcc'     }
+          - { container: 'debian-10-i386',  cpu: 'i386',   arch: 'ia32',   cc: 'clang'   }
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+#      - name: Docker build
+#        run: docker buildx build -t maxirmx/ci-rnp-${{ matrix.image.container }}-${{ matrix.image.cc }} -f ${{ matrix.image.container }}-${{ matrix.image.cc }}.Dockerfile .
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+        with:
+          context: .
+          file: ./${{ matrix.image.container }}-${{ matrix.image.cc }}.Dockerfile
+          push: true
+          tags: ghcr.io/maxirmx/ci-rnp-${{ matrix.image.container }}-${{ matrix.image.cc }}
+          labels: latest
