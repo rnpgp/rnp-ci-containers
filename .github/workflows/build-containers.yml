@@ -47,5 +47,5 @@ jobs:
           context: .
           file: ./${{ matrix.image.container }}-${{ matrix.image.cc }}.Dockerfile
           push: true
-          tags: maxirmx/ci-rnp-${{ matrix.image.container }}-${{ matrix.image.cc }}
+          tags: ghcr.io/maxirmx/ci-rnp-${{ matrix.image.container }}-${{ matrix.image.cc }}
           labels: latest
