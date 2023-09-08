@@ -2,8 +2,9 @@ name: build-debian-containers
 
 on:
   push:
-    branches: [main, initial-development]
+    branches: [ main ]
   pull_request:
+  workflow_dispatch:
 
 concurrency:
   group: '${{ github.workflow }}-${{ github.job }}-${{ github.head_ref || github.ref_name }}'
@@ -37,9 +38,6 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-#      - name: Docker build
-#        run: docker buildx build -t maxirmx/ci-rnp-${{ matrix.image.container }}-${{ matrix.image.cc }} -f ${{ matrix.image.container }}-${{ matrix.image.cc }}.Dockerfile .
 
       - name: Build and push Docker image
         uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
