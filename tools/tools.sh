@@ -67,7 +67,7 @@ build_and_install_python() {
   make -j"${MAKE_PARALLEL}" && sudo make install
   popd
   rm -rf "${python_build}"
-  ensure_symlink_to_target /usr/bin/python3 /usr/local/bin/python
+  ensure_symlink_to_target /usr/bin/python3 /usr/bin/python
 }
 
 build_and_install_automake() {
@@ -119,9 +119,12 @@ build_and_install_botan() {
   local cpuparam=()
   local osslparam=()
   local modules=""
-  [[ "${botan_v}" == "2" ]] && osslparam+=("--without-openssl") && modules=$(<ci/botan-modules tr '\n' ',')
-  [[ "${botan_v}" == "3" ]] && modules=$(<ci/botan3-modules tr '\n' ',')
+  [[ "${botan_v}" == "2" ]] && osslparam+=("--without-openssl") && modules=$(<"$DIR_TOOLS"/botan-modules tr '\n' ',')
+  [[ "${botan_v}" == "3" ]] && modules=$(<"$DIR_TOOLS"/botan3-modules tr '\n' ',')
 
+  echo "Building botan with modules: ${modules}"
+
+  [[ -z "$OS" ]] || osparam=(--os="$OS")
   [[ -z "$CPU" ]] || cpuparam=(--cpu="$CPU" --disable-cc-tests)
 
   local build_target="shared,cli"
@@ -251,5 +254,9 @@ build_and_install_gpg() {
   popd
 }
 
+DIR0=$( dirname "$0" )
+DIR_TOOLS=$( cd "$DIR0" && pwd )
+
+echo "Running tools.sh with args: $@, DIR_TOOLS: ${DIR_TOOLS}"
 
 "$@"
