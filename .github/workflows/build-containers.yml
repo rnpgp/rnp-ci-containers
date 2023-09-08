@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   tests:
-    name: ${{ matrix.image.container }} [CC ${{ matrix.image.cc }}; GnuPG stable]
+    name: ${{ matrix.image.container }} [CC ${{ matrix.compiler.cc }}; GnuPG - system shipped]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -21,12 +21,12 @@ jobs:
       fail-fast: false
       matrix:
         image:
-#          - { container: 'i386/debian:11',  cpu: 'i386',   arch: 'ia32',   backend: 'botan'   }
-#          - { container: 'i386/debian:11',  cpu: 'i386',   arch: 'ia32',   backend: 'openssl' }
-#          - { container: 'amd64/debian:11', cpu: 'x86_64', arch: 'x64',    backend: 'botan'   }
-#          - { container: 'amd64/debian:11', cpu: 'x86_64', arch: 'x64',    backend: 'openssl' }
-          - { container: 'debian-10-i386',  cpu: 'i386',   arch: 'ia32',   cc: 'gcc',   cxx: 'g++'     }
-          - { container: 'debian-10-i386',  cpu: 'i386',   arch: 'ia32',   cc: 'clang', cxx: 'clang++' }
+          - { container: 'debian-11-i386',  cpu: 'x86_64', arch: 'x64'  }
+          - { container: 'debian-11-i386',  cpu: 'i386',   arch: 'ia32' }
+          - { container: 'debian-10-i386',  cpu: 'i386',   arch: 'ia32' }
+        compiler:
+          - {  cc: 'gcc',   cxx: 'g++'     }
+          - {  cc: 'clang', cxx: 'clang++' }
 
     steps:
       - name: Checkout
@@ -45,8 +45,8 @@ jobs:
           context: .
           file: ./${{ matrix.image.container }}.Dockerfile
           push: true
-          tags: ghcr.io/maxirmx/ci-rnp-${{ matrix.image.container }}-${{ matrix.image.cc }}
+          tags: ghcr.io/maxirmx/ci-rnp-${{ matrix.image.container }}-${{ matrix.compiler.cc }}
           labels: latest
           build-args: |
-            CC=${{ matrix.image.cc }}
-            CXX=${{ matrix.image.cxx }}
+            CC=${{ matrix.compiler.cc }}
+            CXX=${{ matrix.compiler.cxx }}

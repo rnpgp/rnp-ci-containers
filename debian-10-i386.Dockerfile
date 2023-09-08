@@ -12,12 +12,15 @@ ARG CXX=g++
 
 COPY tools /opt/tools
 
-RUN apt-get update  &&                                                                     \
-    apt-get -y install git sudo wget bash curl software-properties-common                  \
-           build-essential gettext libbz2-dev libncurses5-dev libssl-dev                   \
+RUN apt-get update  &&                                                \
+    apt-get -y install git sudo wget bash software-properties-common  \
+           build-essential gettext libbz2-dev libssl-dev  pkg-config  \
            zlib1g-dev autoconf automake libtool asciidoctor clang
 
 # Using system-shipped version of gpg (2.1.2)
+# Otherwise
+#   ARG GPG_VERSION=stable (for example, see _gpg_install in tools.sh)
+#   apt-get install curl
 #   /opt/tools/tools.sh build_and_install_gpg
 
 RUN /opt/tools/tools.sh install_cmake                   &&  \
