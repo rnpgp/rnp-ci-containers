@@ -31,6 +31,20 @@ run_in_python_venv() {
   )
 }
 
+# If target does not exist, create symlink from source to target.
+ensure_symlink_to_target() {
+  local from="${1:?Missing source}"
+  local to="${2:?Missing target}"
+
+  if [[ -e "${from}" && ! -e "${to}" ]]; then
+    if ! sudo ln -s "${from}" "${to}"
+    then
+      >&2 echo "Error: ${to} still not available after symlink.  Aborting."
+      exit 1
+    fi
+  fi
+}
+
 install_cmake() {
   echo "Running install_cmake version ${CMAKE_VERSION} for ${ARCH}"
   local cmake_install=${LOCAL_BUILDS}/cmake
@@ -43,6 +57,7 @@ install_cmake() {
 }
 
 build_and_install_python() {
+  echo "Running build_and_install_python version ${PYTHON_VERSION}"
   local python_build=${LOCAL_BUILDS}/python
   mkdir -p "${python_build}"
   pushd "${python_build}"
@@ -50,9 +65,9 @@ build_and_install_python() {
   tar -xf python.tar.xz --strip 1
   ./configure --enable-optimizations --prefix=/usr
   make -j"${MAKE_PARALLEL}" && sudo make install
-  ensure_symlink_to_target /usr/bin/python3 /usr/bin/python
   popd
   rm -rf "${python_build}"
+  ensure_symlink_to_target /usr/bin/python3 /usr/bin/python
 }
 
 build_and_install_automake() {
@@ -104,9 +119,12 @@ build_and_install_botan() {
   local cpuparam=()
   local osslparam=()
   local modules=""
-  [[ "${botan_v}" == "2" ]] && osslparam+=("--without-openssl") && modules=$(<ci/botan-modules tr '\n' ',')
-  [[ "${botan_v}" == "3" ]] && modules=$(<ci/botan3-modules tr '\n' ',')
+  [[ "${botan_v}" == "2" ]] && osslparam+=("--without-openssl") && modules=$(<"$DIR_TOOLS"/botan-modules tr '\n' ',')
+  [[ "${botan_v}" == "3" ]] && modules=$(<"$DIR_TOOLS"/botan3-modules tr '\n' ',')
 
+  echo "Building botan with modules: ${modules}"
+
+  [[ -z "$OS" ]] || osparam=(--os="$OS")
   [[ -z "$CPU" ]] || cpuparam=(--cpu="$CPU" --disable-cc-tests)
 
   local build_target="shared,cli"
@@ -236,5 +254,9 @@ build_and_install_gpg() {
   popd
 }
 
+DIR0=$( dirname "$0" )
+DIR_TOOLS=$( cd "$DIR0" && pwd )
+
+echo "Running tools.sh with args: $@, DIR_TOOLS: ${DIR_TOOLS}"
 
 "$@"

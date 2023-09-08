@@ -2,8 +2,9 @@ name: build-debian-containers
 
 on:
   push:
-    branches: [main, initial-development]
+    branches: [ main ]
   pull_request:
+  workflow_dispatch:
 
 concurrency:
   group: '${{ github.workflow }}-${{ github.job }}-${{ github.head_ref || github.ref_name }}'
@@ -11,7 +12,7 @@ concurrency:
 
 jobs:
   tests:
-    name: ${{ matrix.image.container }} [CC ${{ matrix.image.cc }}; GnuPG stable]
+    name: ${{ matrix.image.container }} [CC ${{ matrix.compiler.cc }}; GnuPG - system shipped]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -20,12 +21,12 @@ jobs:
       fail-fast: false
       matrix:
         image:
-#          - { container: 'i386/debian:11',  cpu: 'i386',   arch: 'ia32',   backend: 'botan'   }
-#          - { container: 'i386/debian:11',  cpu: 'i386',   arch: 'ia32',   backend: 'openssl' }
-#          - { container: 'amd64/debian:11', cpu: 'x86_64', arch: 'x64',    backend: 'botan'   }
-#          - { container: 'amd64/debian:11', cpu: 'x86_64', arch: 'x64',    backend: 'openssl' }
-          - { container: 'debian-10-i386',  cpu: 'i386',   arch: 'ia32',   cc: 'gcc'     }
-          - { container: 'debian-10-i386',  cpu: 'i386',   arch: 'ia32',   cc: 'clang'   }
+          - { container: 'debian-11-amd64',  cpu: 'x86_64', arch: 'x64'  }
+          - { container: 'debian-11-i386',   cpu: 'i386',   arch: 'ia32' }
+          - { container: 'debian-10-i386',   cpu: 'i386',   arch: 'ia32' }
+        compiler:
+          - {  cc: 'gcc',   cxx: 'g++'     }
+          - {  cc: 'clang', cxx: 'clang++' }
 
     steps:
       - name: Checkout
@@ -38,14 +39,22 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-#      - name: Docker build
-#        run: docker buildx build -t maxirmx/ci-rnp-${{ matrix.image.container }}-${{ matrix.image.cc }} -f ${{ matrix.image.container }}-${{ matrix.image.cc }}.Dockerfile .
-
       - name: Build and push Docker image
         uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
         with:
           context: .
-          file: ./${{ matrix.image.container }}-${{ matrix.image.cc }}.Dockerfile
+          file: ./${{ matrix.image.container }}.Dockerfile
           push: true
-          tags: ghcr.io/maxirmx/ci-rnp-${{ matrix.image.container }}-${{ matrix.image.cc }}
+          tags: ghcr.io/maxirmx/ci-rnp-${{ matrix.image.container }}-${{ matrix.compiler.cc }}
           labels: latest
+          build-args: |
+            CC=${{ matrix.compiler.cc }}
+            CXX=${{ matrix.compiler.cxx }}
+
+      - name: Purge old versions
+        uses: actions/delete-package-versions@v4
+        with:
+          package-name: 'ci-rnp-${{ matrix.image.container }}-${{ matrix.compiler.cc }}'
+          package-type: 'container'
+          min-versions-to-keep: 1
+          delete-only-untagged-versions: 'true'
