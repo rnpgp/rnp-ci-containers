@@ -3,6 +3,7 @@ name: build-debian-containers
 on:
   push:
     branches: [ main ]
+    tags:     [ 'v*' ]
   pull_request:
   workflow_dispatch:
 
@@ -44,7 +45,7 @@ jobs:
         with:
           context: .
           file: ./${{ matrix.image.container }}.Dockerfile
-          push: true
+          push: ${{ contains(github.ref, 'refs/tags/v') }}
           tags: ghcr.io/maxirmx/ci-rnp-${{ matrix.image.container }}-${{ matrix.compiler.cc }}
           labels: latest
           build-args: |
