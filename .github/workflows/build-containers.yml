@@ -45,14 +45,15 @@ jobs:
         with:
           context: .
           file: ./${{ matrix.image.container }}.Dockerfile
-          push: ${{ contains(github.ref, 'refs/tags/v') }}
-          tags: ghcr.io/maxirmx/ci-rnp-${{ matrix.image.container }}-${{ matrix.compiler.cc }}
+          push: 'true' # ${{ contains(github.ref, 'refs/tags/v') }}
+          tags: ghcr.io/rnpgp/ci-rnp-${{ matrix.image.container }}-${{ matrix.compiler.cc }}
           labels: latest
           build-args: |
             CC=${{ matrix.compiler.cc }}
             CXX=${{ matrix.compiler.cxx }}
 
       - name: Purge old versions
+        if: ${{ contains(github.ref, 'refs/tags/v') }}
         uses: actions/delete-package-versions@v4
         with:
           package-name: 'ci-rnp-${{ matrix.image.container }}-${{ matrix.compiler.cc }}'
