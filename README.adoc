@@ -1,0 +1,42 @@
+# Build scripts for RNP CI containers
+
+This repository contains docker scripts to build containers that support RNP CI.
+
+## Naming
+
+Scripts naming follows the pattern
+
+[source]
+-----
+<operating system>-<version>-<cpu family>.Dockerfile
+-----
+
+for example,
+[source]
+
+-----
+debian-11-i386.Dockerfile
+-----
+
+Containers' tags follow the pattern
+
+[source]
+-----
+ci-rnp-<operating system>-<version>-<cpu family>-<cc setting>
+-----
+
+for example,
+[source]
+
+-----
+ci-rnpdebian-11-i386-clang
+-----
+
+## Applicability
+
+RNP CI normally uses system shipped versions of dependencies.
+However, under two circumstances custom requirements need to be supported:
+* some legacy environments provide only versions that are not already supported by rnp
+* someties RNP needs to be tested with versions that differ from provided by ststem packages
+
+This repository supports two cases listed above
