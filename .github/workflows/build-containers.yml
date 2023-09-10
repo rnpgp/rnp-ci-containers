@@ -45,7 +45,7 @@ jobs:
         with:
           context: .
           file: ./${{ matrix.image.container }}.Dockerfile
-          push: 'true' # ${{ contains(github.ref, 'refs/tags/v') }}
+          push: ${{ contains(github.ref, 'refs/tags/v') }}
           tags: ghcr.io/${{ github.actor }}/ci-rnp-${{ matrix.image.container }}-${{ matrix.compiler.cc }}
           labels: latest
           build-args: |
@@ -53,7 +53,7 @@ jobs:
             CXX=${{ matrix.compiler.cxx }}
 
       - name: Purge old versions
-        if: ${{ contains(github.ref, 'refs/tags/v') }}
+        continue-on-error: true
         uses: actions/delete-package-versions@v4
         with:
           package-name: 'ci-rnp-${{ matrix.image.container }}-${{ matrix.compiler.cc }}'
