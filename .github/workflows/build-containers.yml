@@ -12,7 +12,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  tests:
+  build-containers:
     name: ${{ matrix.image.container }} [CC ${{ matrix.compiler.cc }}; GnuPG - system shipped]
     runs-on: ubuntu-latest
     permissions:
@@ -46,7 +46,7 @@ jobs:
           context: .
           file: ./${{ matrix.image.container }}.Dockerfile
           push: 'true' # ${{ contains(github.ref, 'refs/tags/v') }}
-          tags: ghcr.io/rnpgp/ci-rnp-${{ matrix.image.container }}-${{ matrix.compiler.cc }}
+          tags: ghcr.io/${{ github.actor }}/ci-rnp-${{ matrix.image.container }}-${{ matrix.compiler.cc }}
           labels: latest
           build-args: |
             CC=${{ matrix.compiler.cc }}
