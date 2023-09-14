@@ -1,4 +1,4 @@
-name: build-debian-containers
+name: build-containers
 
 on:
   push:
@@ -49,6 +49,7 @@ jobs:
           labels: latest
 
       - name: Purge old versions
+        if: contains(github.ref, 'refs/tags/v')
         continue-on-error: true
         uses: actions/delete-package-versions@v4
         with:
