@@ -7,6 +7,7 @@ ENV LC_ALL=C.UTF-8
 ENV LC_LANG=.UTF-8
 ENV ARCH=ia32
 ENV CPU=i386
+ENV OS=linux
 
 ARG CC=gcc
 ARG CXX=g++
@@ -20,9 +21,13 @@ RUN apt-get update  &&                                                \
 
 # Using system-shipped version of gpg (2.1.2)
 # Otherwise
-#   ARG GPG_VERSION=stable (for example, see _gpg_install in tools.sh)
 #   apt-get install curl
-#   /opt/tools/tools.sh build_and_install_gpg
+#   /opt/tools/tools.sh build_and_install_gpg <version>
+#   selected version will be installed to /opt/gpg/<version>
+#
+#   for example, /opt/tools/tools.sh build_and_install_gpg stable
+#   installs to /opt/gpg/stable
+#
 
 RUN /opt/tools/tools.sh install_cmake                   &&  \
     /opt/tools/tools.sh build_and_install_automake      &&  \

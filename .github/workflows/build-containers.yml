@@ -2,7 +2,7 @@ name: build-debian-containers
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, centos-containers ]
     tags:     [ 'v*' ]
   pull_request:
   workflow_dispatch:
@@ -13,7 +13,7 @@ concurrency:
 
 jobs:
   build-containers:
-    name: ${{ matrix.image.container }} [CC ${{ matrix.compiler.cc }}; GnuPG - system shipped]
+    name: ${{ matrix.container }} [CC ${{ matrix.compiler.cc }}; GnuPG - system shipped]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -21,13 +21,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        image:
-          - { container: 'debian-11-amd64',  cpu: 'x86_64', arch: 'x64'  }
-          - { container: 'debian-11-i386',   cpu: 'i386',   arch: 'ia32' }
-          - { container: 'debian-10-i386',   cpu: 'i386',   arch: 'ia32' }
-        compiler:
-          - {  cc: 'gcc',   cxx: 'g++'     }
-          - {  cc: 'clang', cxx: 'clang++' }
+        container:
+          - 'centos-7-amd64'
+          - 'centos-8-amd64'
+          - 'debian-11-amd64'
+          - 'debian-11-i386'
+          - 'debian-10-i386'
 
     steps:
       - name: Checkout
@@ -44,19 +43,16 @@ jobs:
         uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
         with:
           context: .
-          file: ./${{ matrix.image.container }}.Dockerfile
+          file: ./${{ matrix.container }}.Dockerfile
           push: ${{ contains(github.ref, 'refs/tags/v') }}
-          tags: ghcr.io/${{ github.actor }}/ci-rnp-${{ matrix.image.container }}-${{ matrix.compiler.cc }}
+          tags: ghcr.io/${{ github.actor }}/ci-rnp-${{ matrix.container }}
           labels: latest
-          build-args: |
-            CC=${{ matrix.compiler.cc }}
-            CXX=${{ matrix.compiler.cxx }}
 
       - name: Purge old versions
         continue-on-error: true
         uses: actions/delete-package-versions@v4
         with:
-          package-name: 'ci-rnp-${{ matrix.image.container }}-${{ matrix.compiler.cc }}'
+          package-name: 'ci-rnp-${{ matrix.container }}-${{ matrix.compiler.cc }}'
           package-type: 'container'
           min-versions-to-keep: 1
           delete-only-untagged-versions: 'true'
