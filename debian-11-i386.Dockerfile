@@ -1,5 +1,4 @@
 FROM i386/debian:11
-LABEL org.opencontainers.image.source = "https://github.com/rnpgp/rnp-ci-containers"
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=C.UTF-8
@@ -7,6 +6,7 @@ ENV LC_ALL=C.UTF-8
 ENV LC_LANG=.UTF-8
 ENV ARCH=ia32
 ENV CPU=i386
+ENV OS=linux
 
 ARG CC=gcc
 ARG CXX=g++

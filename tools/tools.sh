@@ -1,12 +1,15 @@
 #!/bin/bash
+set -o errexit -o pipefail -o noclobber -o nounset
+
 : "${LOCAL_BUILDS:=/tmp/local_builds}"
 : "${BOTAN_VERSION:=2.18.2}"
 : "${JSONC_VERSION:=0.12.1}"
 : "${PYTHON_VERSION:=3.9.2}"
 : "${AUTOMAKE_VERSION:=1.16.4}"
+: "${LIBICONV_VERSION:=1.17}"
 : "${CMAKE_VERSION:=3.20.6-2}"
-: "${GPG_VERSION:=stable}"
 : "${MAKE_PARALLEL:=4}"
+: "${USE_STATIC_DEPENDENCIES:=false}"
 
 is_use_static_dependencies() {
   [[ -n "${USE_STATIC_DEPENDENCIES}" ]] && \
@@ -63,11 +66,11 @@ build_and_install_python() {
   pushd "${python_build}"
   wget -O python.tar.xz https://www.python.org/ftp/python/"${PYTHON_VERSION}"/Python-"${PYTHON_VERSION}".tar.xz
   tar -xf python.tar.xz --strip 1
-  ./configure --enable-optimizations --prefix=/usr
+  ./configure --enable-optimizations --prefix=/usr/local
   make -j"${MAKE_PARALLEL}" && sudo make install
   popd
   rm -rf "${python_build}"
-  ensure_symlink_to_target /usr/bin/python3 /usr/bin/python
+  ensure_symlink_to_target /usr/local/bin/python3 /usr/local/bin/python
 }
 
 build_and_install_automake() {
@@ -82,6 +85,20 @@ build_and_install_automake() {
   sudo make install
   popd
   rm -rf "${automake_build}"
+}
+
+build_and_install_libiconv() {
+  echo "Running build_and_install_libiconv version ${LIBICONV_VERSION}"
+  local libiconv_build=${LOCAL_BUILDS}/libiconv
+  mkdir -p "${libiconv_build}"
+  pushd "${libiconv_build}"
+  wget -O libiconv.tar.xz "https://ftp.gnu.org/gnu/libiconv/libiconv-${LIBICONV_VERSION}.tar.gz"
+  tar -xf libiconv.tar.xz --strip 1
+  ./configure --prefix=/usr
+  make -j"${MAKE_PARALLEL}"
+  sudo make install
+  popd
+  rm -rf "${libiconv_build}"
 }
 
 build_and_install_jsonc() {
@@ -151,7 +168,7 @@ _install_gpg() {
 
   local gpg_build="$PWD"
   # shellcheck disable=SC2153
-  local gpg_install="/usr/local"
+  local gpg_install="${GPG_INSTALL:-/usr/local}"
   git clone --depth 1 https://github.com/rnpgp/gpg-build-scripts
   pushd gpg-build-scripts
 
@@ -159,7 +176,7 @@ _install_gpg() {
   [[ -z "$CPU" ]] || cpuparam=(--build="$CPU")
 
   local configure_opts=(
-      "--prefix=/usr/local"
+      "--prefix=${gpg_install}"
       "--with-libgpg-error-prefix=${gpg_install}"
       "--with-libassuan-prefix=${gpg_install}"
       "--with-libgcrypt-prefix=${gpg_install}"
@@ -187,11 +204,6 @@ _install_gpg() {
       --build-dir "${gpg_build}"
       --configure-opts "${configure_opts[*]}"
   )
-
-  # For "tee"-ing to /etc/ld.so.conf.d/gpg-from_build_scripts.conf from option `--ldconfig`
-  if [[ "${SUDO}" = "sudo" && "${DIST}" != "ubuntu" ]]; then
-    common_args+=(--sudo)
-  fi
 
   # Workaround to correctly build pinentry on the latest GHA on macOS. Most likely there is a better solution.
   export CFLAGS="-D_XOPEN_SOURCE_EXTENDED"
@@ -221,9 +233,10 @@ _install_gpg() {
   popd
 }
 
-
 build_and_install_gpg() {
-  echo "Running build_and_install_gpg version ${GPG_VERSION}"
+  GPG_VERSION="${1:-stable}"
+  GPG_INSTALL="/opt/gpg/${GPG_VERSION}"
+  echo "Running build_and_install_gpg version ${GPG_VERSION} (installing to ${GPG_INSTALL})"
 
   local gpg_build=${LOCAL_BUILDS}/gpg
   mkdir -p "${gpg_build}"
@@ -252,6 +265,7 @@ build_and_install_gpg() {
       exit 1
   esac
   popd
+  rm -rf ${gpg_build}
 }
 
 DIR0=$( dirname "$0" )
