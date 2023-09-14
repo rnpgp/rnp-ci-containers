@@ -1,12 +1,17 @@
 #!/bin/bash
+set -o errexit -o pipefail -o noclobber -o nounset
+
 : "${LOCAL_BUILDS:=/tmp/local_builds}"
-: "${BOTAN_VERSION:=2.18.2}"
 : "${JSONC_VERSION:=0.12.1}"
 : "${PYTHON_VERSION:=3.9.2}"
 : "${AUTOMAKE_VERSION:=1.16.4}"
+: "${LIBICONV_VERSION:=1.17}"
 : "${CMAKE_VERSION:=3.20.6-2}"
-: "${GPG_VERSION:=stable}"
 : "${MAKE_PARALLEL:=4}"
+: "${USE_STATIC_DEPENDENCIES:=false}"
+
+: "${DEFAULT_BOTAN_VERSION:=2.18.2}"
+: "${DEFAULT_GPG_VERSION:=stable}"
 
 is_use_static_dependencies() {
   [[ -n "${USE_STATIC_DEPENDENCIES}" ]] && \
@@ -63,11 +68,11 @@ build_and_install_python() {
   pushd "${python_build}"
   wget -O python.tar.xz https://www.python.org/ftp/python/"${PYTHON_VERSION}"/Python-"${PYTHON_VERSION}".tar.xz
   tar -xf python.tar.xz --strip 1
-  ./configure --enable-optimizations --prefix=/usr
+  ./configure --enable-optimizations --prefix=/usr/local
   make -j"${MAKE_PARALLEL}" && sudo make install
   popd
   rm -rf "${python_build}"
-  ensure_symlink_to_target /usr/bin/python3 /usr/bin/python
+  ensure_symlink_to_target /usr/local/bin/python3 /usr/local/bin/python
 }
 
 build_and_install_automake() {
@@ -82,6 +87,20 @@ build_and_install_automake() {
   sudo make install
   popd
   rm -rf "${automake_build}"
+}
+
+build_and_install_libiconv() {
+  echo "Running build_and_install_libiconv version ${LIBICONV_VERSION}"
+  local libiconv_build=${LOCAL_BUILDS}/libiconv
+  mkdir -p "${libiconv_build}"
+  pushd "${libiconv_build}"
+  wget -O libiconv.tar.xz "https://ftp.gnu.org/gnu/libiconv/libiconv-${LIBICONV_VERSION}.tar.gz"
+  tar -xf libiconv.tar.xz --strip 1
+  ./configure --prefix=/usr
+  make -j"${MAKE_PARALLEL}"
+  sudo make install
+  popd
+  rm -rf "${libiconv_build}"
 }
 
 build_and_install_jsonc() {
@@ -107,7 +126,16 @@ build_and_install_jsonc() {
 }
 
 build_and_install_botan() {
-  echo "Running build_and_install_botan version ${BOTAN_VERSION}"
+  BOTAN_VERSION="${1:-system}"
+
+  if [[ $BOTAN_VERSION == "system" ]]; then
+    BOTAN_VERSION="$DEFAULT_BOTAN_VERSION"
+    BOTAN_INSTALL="/usr/local"
+  else
+    BOTAN_INSTALL="/opt/botan/$BOTAN_VERSION"
+  fi
+
+  echo "Running build_and_install_botan version ${BOTAN_VERSION} (installing to ${BOTAN_INSTALL})"
 
   local botan_v=${BOTAN_VERSION::1}
   local botan_build=${LOCAL_BUILDS}/botan
@@ -130,7 +158,7 @@ build_and_install_botan() {
   local build_target="shared,cli"
   is_use_static_dependencies && build_target="static,cli"
 
-  run_in_python_venv ./configure.py --prefix=/usr --with-debug-info --extra-cxxflags="-fno-omit-frame-pointer -fPIC" \
+  run_in_python_venv ./configure.py --prefix="${BOTAN_INSTALL}" --with-debug-info --extra-cxxflags="-fno-omit-frame-pointer -fPIC" \
       ${osparam+"${osparam[@]}"} ${cpuparam+"${cpuparam[@]}"} --without-documentation ${osslparam+"${osslparam[@]}"} --build-targets="${build_target}" \
       --minimized-build --enable-modules="$modules"
   make -j"${MAKE_PARALLEL}"
@@ -151,7 +179,7 @@ _install_gpg() {
 
   local gpg_build="$PWD"
   # shellcheck disable=SC2153
-  local gpg_install="/usr/local"
+  local gpg_install="${GPG_INSTALL:-/usr/local}"
   git clone --depth 1 https://github.com/rnpgp/gpg-build-scripts
   pushd gpg-build-scripts
 
@@ -159,7 +187,7 @@ _install_gpg() {
   [[ -z "$CPU" ]] || cpuparam=(--build="$CPU")
 
   local configure_opts=(
-      "--prefix=/usr/local"
+      "--prefix=${gpg_install}"
       "--with-libgpg-error-prefix=${gpg_install}"
       "--with-libassuan-prefix=${gpg_install}"
       "--with-libgcrypt-prefix=${gpg_install}"
@@ -187,11 +215,6 @@ _install_gpg() {
       --build-dir "${gpg_build}"
       --configure-opts "${configure_opts[*]}"
   )
-
-  # For "tee"-ing to /etc/ld.so.conf.d/gpg-from_build_scripts.conf from option `--ldconfig`
-  if [[ "${SUDO}" = "sudo" && "${DIST}" != "ubuntu" ]]; then
-    common_args+=(--sudo)
-  fi
 
   # Workaround to correctly build pinentry on the latest GHA on macOS. Most likely there is a better solution.
   export CFLAGS="-D_XOPEN_SOURCE_EXTENDED"
@@ -221,9 +244,10 @@ _install_gpg() {
   popd
 }
 
-
 build_and_install_gpg() {
-  echo "Running build_and_install_gpg version ${GPG_VERSION}"
+  GPG_VERSION="${1:-stable}"
+  GPG_INSTALL="/opt/gpg/${GPG_VERSION}"
+  echo "Running build_and_install_gpg version ${GPG_VERSION} (installing to ${GPG_INSTALL})"
 
   local gpg_build=${LOCAL_BUILDS}/gpg
   mkdir -p "${gpg_build}"
@@ -239,10 +263,10 @@ build_and_install_gpg() {
       #                              npth libgpg-error libgcrypt libassuan libksba pinentry gnupg
       _install_gpg component-version 1.6  1.46         1.8.10     2.5.5     1.6.3   1.2.1   2.2.41
       ;;
-    beta)
+    #beta)
       #                              npth    libgpg-error libgcrypt libassuan libksba pinentry gnupg
-      _install_gpg component-git-ref 2501a48 f73605e      d9c4183   909133b   3df0cd3 0e2e53c  c6702d7
-      ;;
+      #_install_gpg component-git-ref 2501a48 f73605e      d9c4183   909133b   3df0cd3 0e2e53c  c6702d7
+      #;;
     "2.3.1")
       #                              npth libgpg-error libgcrypt libassuan libksba pinentry gnupg
       _install_gpg component-version 1.6  1.42         1.9.3     2.5.5     1.6.0   1.1.1    2.3.1
@@ -252,6 +276,7 @@ build_and_install_gpg() {
       exit 1
   esac
   popd
+  rm -rf ${gpg_build}
 }
 
 DIR0=$( dirname "$0" )
