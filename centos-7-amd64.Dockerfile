@@ -1,5 +1,4 @@
 FROM centos:7
-LABEL org.opencontainers.image.source = "https://github.com/maxirmx/rnp-ci-containers"
 
 ENV LANG=en_US.UTF-8
 ENV LC_ALL=en_US.UTF-8

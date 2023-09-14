@@ -46,7 +46,9 @@ jobs:
           file: ./${{ matrix.container }}.Dockerfile
           push: ${{ contains(github.ref, 'refs/tags/v') }}
           tags: ghcr.io/${{ github.actor }}/ci-rnp-${{ matrix.container }}
-          labels: latest
+          labels: |
+            latest
+            "org.opencontainers.image.source=${{ github.repositoryUrl }}"
 
       - name: Purge old versions
         if: contains(github.ref, 'refs/tags/v')

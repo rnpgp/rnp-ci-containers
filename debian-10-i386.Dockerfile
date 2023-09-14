@@ -1,5 +1,4 @@
 FROM i386/debian:10
-LABEL org.opencontainers.image.source = "https://github.com/maxirmx/rnp-ci-containers"
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=C.UTF-8
