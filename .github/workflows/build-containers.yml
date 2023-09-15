@@ -24,6 +24,7 @@ jobs:
         container:
           - 'centos-7-amd64'
           - 'centos-8-amd64'
+          - 'centos-9-amd64'
           - 'debian-11-amd64'
           - 'debian-11-i386'
           - 'debian-10-i386'

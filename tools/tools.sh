@@ -2,7 +2,6 @@
 set -o errexit -o pipefail -o noclobber -o nounset
 
 : "${LOCAL_BUILDS:=/tmp/local_builds}"
-: "${BOTAN_VERSION:=2.18.2}"
 : "${JSONC_VERSION:=0.12.1}"
 : "${PYTHON_VERSION:=3.9.2}"
 : "${AUTOMAKE_VERSION:=1.16.4}"
@@ -10,6 +9,9 @@ set -o errexit -o pipefail -o noclobber -o nounset
 : "${CMAKE_VERSION:=3.20.6-2}"
 : "${MAKE_PARALLEL:=4}"
 : "${USE_STATIC_DEPENDENCIES:=false}"
+
+: "${DEFAULT_BOTAN_VERSION:=2.18.2}"
+: "${DEFAULT_GPG_VERSION:=stable}"
 
 is_use_static_dependencies() {
   [[ -n "${USE_STATIC_DEPENDENCIES}" ]] && \
@@ -124,7 +126,16 @@ build_and_install_jsonc() {
 }
 
 build_and_install_botan() {
-  echo "Running build_and_install_botan version ${BOTAN_VERSION}"
+  BOTAN_VERSION="${1:-system}"
+
+  if [[ $BOTAN_VERSION == "system" ]]; then
+    BOTAN_VERSION="$DEFAULT_BOTAN_VERSION"
+    BOTAN_INSTALL="/usr/local"
+  else
+    BOTAN_INSTALL="/opt/botan/$BOTAN_VERSION"
+  fi
+
+  echo "Running build_and_install_botan version ${BOTAN_VERSION} (installing to ${BOTAN_INSTALL})"
 
   local botan_v=${BOTAN_VERSION::1}
   local botan_build=${LOCAL_BUILDS}/botan
@@ -147,7 +158,7 @@ build_and_install_botan() {
   local build_target="shared,cli"
   is_use_static_dependencies && build_target="static,cli"
 
-  run_in_python_venv ./configure.py --prefix=/usr --with-debug-info --extra-cxxflags="-fno-omit-frame-pointer -fPIC" \
+  run_in_python_venv ./configure.py --prefix="${BOTAN_INSTALL}" --with-debug-info --extra-cxxflags="-fno-omit-frame-pointer -fPIC" \
       ${osparam+"${osparam[@]}"} ${cpuparam+"${cpuparam[@]}"} --without-documentation ${osslparam+"${osslparam[@]}"} --build-targets="${build_target}" \
       --minimized-build --enable-modules="$modules"
   make -j"${MAKE_PARALLEL}"
@@ -252,10 +263,10 @@ build_and_install_gpg() {
       #                              npth libgpg-error libgcrypt libassuan libksba pinentry gnupg
       _install_gpg component-version 1.6  1.46         1.8.10     2.5.5     1.6.3   1.2.1   2.2.41
       ;;
-    beta)
+    #beta)
       #                              npth    libgpg-error libgcrypt libassuan libksba pinentry gnupg
-      _install_gpg component-git-ref 2501a48 f73605e      d9c4183   909133b   3df0cd3 0e2e53c  c6702d7
-      ;;
+      #_install_gpg component-git-ref 2501a48 f73605e      d9c4183   909133b   3df0cd3 0e2e53c  c6702d7
+      #;;
     "2.3.1")
       #                              npth libgpg-error libgcrypt libassuan libksba pinentry gnupg
       _install_gpg component-version 1.6  1.42         1.9.3     2.5.5     1.6.0   1.1.1    2.3.1
