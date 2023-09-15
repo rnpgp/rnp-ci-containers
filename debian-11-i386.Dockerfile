@@ -7,10 +7,7 @@ ENV LC_LANG=.UTF-8
 ENV ARCH=ia32
 ENV CPU=i386
 ENV OS=linux
-<<<<<<< HEAD
 ENV LD_LIBRARY_PATH=/usr/local/lib
-=======
->>>>>>> Fixed Debian workflow
 
 ARG CC=gcc
 ARG CXX=g++

@@ -27,5 +27,4 @@ RUN /opt/tools/tools.sh ensure_symlink_to_target '/usr/bin/python3' '/usr/bin/py
 
 RUN /opt/tools/tools.sh build_and_install_gpg stable && \
     /opt/tools/tools.sh build_and_install_gpg lts    && \
-    /opt/tools/tools.sh build_and_install_gpg beta   && \
     /opt/tools/tools.sh build_and_install_gpg 2.3.1
