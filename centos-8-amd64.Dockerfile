@@ -12,7 +12,7 @@ ARG CXX=g++
 
 COPY tools /opt/tools
 
-RUN dnf -y update dnf -y install sudo wget git epel-release 'dnf-command(config-manager)'            && \
+RUN dnf -y update && dnf -y install sudo wget git epel-release 'dnf-command(config-manager)'         && \
     dnf config-manager --set-enabled powertools                                                      && \
     rpm --import https://github.com/riboseinc/yum/raw/master/ribose-packages.pub                     && \
     rpm --import https://github.com/riboseinc/yum/raw/master/ribose-packages-next.pub                && \
