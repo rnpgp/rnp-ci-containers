@@ -7,11 +7,12 @@ set -o errexit -o pipefail -o noclobber -o nounset
 : "${AUTOMAKE_VERSION:=1.16.4}"
 : "${LIBICONV_VERSION:=1.17}"
 : "${CMAKE_VERSION:=3.20.6-2}"
-: "${MAKE_PARALLEL:=4}"
 : "${USE_STATIC_DEPENDENCIES:=false}"
 
 : "${DEFAULT_BOTAN_VERSION:=2.18.2}"
 : "${DEFAULT_GPG_VERSION:=stable}"
+
+MAKE_PARALLEL="$(nproc --all)"
 
 is_use_static_dependencies() {
   [[ -n "${USE_STATIC_DEPENDENCIES}" ]] && \
@@ -19,21 +20,6 @@ is_use_static_dependencies() {
   [[ off   != "${USE_STATIC_DEPENDENCIES}" ]] && \
   [[ false != "${USE_STATIC_DEPENDENCIES}" ]] && \
   [[ 0     != "${USE_STATIC_DEPENDENCIES}" ]]
-}
-
-# Run its arguments inside a python-virtualenv-enabled sub-shell.
-run_in_python_venv() {
-  if [[ ! -e ~/.venv ]] || [[ ! -f ~/.venv/bin/activate ]]; then
-      python3 -m venv ~/.venv
-  fi
-
-  (
-    # Avoid issues like '_OLD_VIRTUAL_PATH: unbound variable'
-    set +u
-    . ~/.venv/bin/activate
-    set -u
-    "$@"
-  )
 }
 
 # If target does not exist, create symlink from source to target.
@@ -96,7 +82,7 @@ build_and_install_libiconv() {
   pushd "${libiconv_build}"
   wget -O libiconv.tar.xz "https://ftp.gnu.org/gnu/libiconv/libiconv-${LIBICONV_VERSION}.tar.gz"
   tar -xf libiconv.tar.xz --strip 1
-  ./configure --prefix=/usr
+  ./configure --prefix=/usr/local
   make -j"${MAKE_PARALLEL}"
   sudo make install
   popd
@@ -128,12 +114,19 @@ build_and_install_jsonc() {
 build_and_install_botan() {
   BOTAN_VERSION="${1:-system}"
 
-  if [[ $BOTAN_VERSION == "system" ]]; then
-    BOTAN_VERSION="$DEFAULT_BOTAN_VERSION"
-    BOTAN_INSTALL="/usr/local"
-  else
-    BOTAN_INSTALL="/opt/botan/$BOTAN_VERSION"
-  fi
+  case "${BOTAN_VERSION}" in
+    system)
+      BOTAN_VERSION="$DEFAULT_BOTAN_VERSION"
+      BOTAN_INSTALL="/usr/local"
+      ;;
+    head)
+      BOTAN_INSTALL="/opt/botan/$BOTAN_VERSION"
+      BOTAN_VERSION="master"
+      ;;
+    *)
+      BOTAN_INSTALL="/opt/botan/$BOTAN_VERSION"
+      ;;
+  esac
 
   echo "Running build_and_install_botan version ${BOTAN_VERSION} (installing to ${BOTAN_INSTALL})"
 
@@ -146,9 +139,9 @@ build_and_install_botan() {
   local osparam=()
   local cpuparam=()
   local osslparam=()
-  local modules=""
-  [[ "${botan_v}" == "2" ]] && osslparam+=("--without-openssl") && modules=$(<"$DIR_TOOLS"/botan-modules tr '\n' ',')
-  [[ "${botan_v}" == "3" ]] && modules=$(<"$DIR_TOOLS"/botan3-modules tr '\n' ',')
+  local modules=$(cat "$DIR_TOOLS"/botan3-modules | tr '\n' ',')
+  [[ "${botan_v}" == "2" ]] && osslparam+=("--without-openssl") && modules=$(cat "$DIR_TOOLS"/botan-modules | tr '\n' ',')
+
 
   echo "Building botan with modules: ${modules}"
 
@@ -158,7 +151,7 @@ build_and_install_botan() {
   local build_target="shared,cli"
   is_use_static_dependencies && build_target="static,cli"
 
-  run_in_python_venv ./configure.py --prefix="${BOTAN_INSTALL}" --with-debug-info --extra-cxxflags="-fno-omit-frame-pointer -fPIC" \
+  python ./configure.py --prefix="${BOTAN_INSTALL}" --with-debug-info --extra-cxxflags="-fno-omit-frame-pointer -fPIC" \
       ${osparam+"${osparam[@]}"} ${cpuparam+"${cpuparam[@]}"} --without-documentation ${osslparam+"${osslparam[@]}"} --build-targets="${build_target}" \
       --minimized-build --enable-modules="$modules"
   make -j"${MAKE_PARALLEL}"
@@ -274,6 +267,31 @@ build_and_install_gpg() {
   esac
   popd
   rm -rf ${gpg_build}
+}
+
+select_crypto_backend_for_gha() {
+  backend="$(echo "${1:-}" | tr '[:upper:]' '[:lower:]')"
+  echo CRYPTO_BACKEND="$backend" >> $GITHUB_ENV
+}
+
+select_gpg_version_for_gha() {
+  GPG_VERSION=$(echo "${1:-system}" | tr '[:upper:]' '[:lower:]')
+
+  if [[ "$GPG_VERSION" != 'system' ]]; then
+    echo "/opt/gpg/$GPG_VERSION/bin" >> $GITHUB_PATH
+  fi
+}
+
+select_botan_version_for_gha() {
+  BOTAN_VERSION=$(echo "${1:-system}" | tr '[:upper:]' '[:lower:]')
+
+  if [[ "$BOTAN_VERSION" != 'system' ]]; then
+    echo "/opt/botan/$BOTAN_VERSION/bin" >> $GITHUB_PATH
+    echo BOTAN_ROOT_DIR="/opt/botan/$BOTAN_VERSION" >> $GITHUB_ENV
+    echo LD_LIBRARY_PATH="/opt/botan/$BOTAN_VERSION/lib${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}" >> $GITHUB_ENV
+    echo PKG_CONFIG_PATH="/opt/botan/$BOTAN_VERSION/lib/pkgconfig${PKG_CONFIG_PATH:+:${PKG_CONFIG_PATH}}" >> $GITHUB_ENV
+    echo CPATH="/opt/botan/$BOTAN_VERSION/include${CPATH:+:${CPATH}}" >> $GITHUB_ENV
+  fi
 }
 
 DIR0=$( dirname "$0" )

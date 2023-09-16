@@ -53,46 +53,78 @@ This repository created images that support two cases listed above
 | 2.2.12
 | system shipped
 
-| debian-11-i386/amd64
+| debian-11-i386
 | 2.18.2
 | local build @ /usr/local
 | 2.2.27
 | system shipped
 
-| centos-7-amd64
-| 2.16.0
-| ribose repo
+| debian-11-amd64
+| 2.18.2
+| local build @ /usr/local
+| 2.2.27
+| system shipped
+
+.3+| centos-7-amd64
+.3+| 2.16.0
+.3+| ribose repository
 | 2.0.22
 | system shipped
 
-| centos-8-amd64
-| 2.16.0
-| ribose repo
-| 2.2.20
-| system shipped
-
-| centos-9-amd64
-| 2.19.3
-| system shipped
-| 2.3.3
-| system shipped
-
-| fedora-35-amd64
-| 2.18.2
-| system shipped
-| 2.3.4
-| system shipped
-
-+3.| fedora-36-amd64
-+2.| 2.19.1
-+2.| system shipped
-| 2.3.7
-| system shipped
-
-| 3.1.1
-| local build @ /opt/botan/3.1.1
 | stable (2.4.3)
 | local build @ /opt/gpg/stable
 
+| lts (2.2.41)
+| local build @ /opt/gpg/lts
+
+.3+| centos-8-amd64
+.2+| 2.16.0
+.2+| ribose repository
+| 2.2.20
+| system shipped
+
+| stable (2.4.3)
+| local build @ /opt/gpg/stable
+
+| 2.18.2
+| local build @ /opt/botan/2.18.2
+| lts (2.2.41)
+| local build @ /opt/gpg/lts
+
+.3+| centos-9-amd64
+.3+| 2.19.3
+.3+| system shipped
+| 2.3.3
+| system shipped
+
+| stable (2.4.3)
+| local build @ /opt/gpg/stable
+
+| lts (2.2.41)
+| local build @ /opt/gpg/lts
+
+.3+| fedora-35-amd64
+.3+| 2.18.2
+.3+| system shipped
+| 2.3.4
+| system shipped
+
+| stable (2.4.3)
+| local build @ /opt/gpg/stable
+
+| lts (2.2.41)
+| local build @ /opt/gpg/lts
+
+.3+| fedora-36-amd64
+.2+| 2.19.1
+.2+| system shipped
+| 2.3.7
+| system shipped
+
+| stable (2.4.3)
+| local build @ /opt/gpg/stable
+
+| 3.1.1
+| local build @ /opt/botan/3.1.1
 | lts (2.2.41)
 | local build @ /opt/gpg/lts
