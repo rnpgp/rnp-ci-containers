@@ -25,6 +25,8 @@ jobs:
           - 'centos-7-amd64'
           - 'centos-8-amd64'
           - 'centos-9-amd64'
+          - 'fedora-3.5-amd64'
+          - 'fedora-3.6-amd64'
           - 'debian-11-amd64'
           - 'debian-11-i386'
           - 'debian-10-i386'

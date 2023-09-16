@@ -22,9 +22,8 @@ RUN yum -y install http://opensource.wandisco.com/centos/7/git/x86_64/wandisco-g
     yum -y update                                                                                           && \
     yum -y install llvm-toolset-7.0 json-c12-devel clang gcc gcc-c++ make autoconf libtool gzip                \
                    bzip2 bzip2-devel gettext-devel ncurses-devel zlib-devel python3 asciidoctor                \
-                   botan2 botan2-devel openssl-devel bison byacc
+                   botan2 botan2-devel openssl-devel bison byacc gpg
 
 RUN /opt/tools/tools.sh ensure_symlink_to_target '/usr/bin/python3' '/usr/bin/python'               && \
     /opt/tools/tools.sh install_cmake                                                               && \
-    /opt/tools/tools.sh build_and_install_automake                                                  && \
-    /opt/tools/tools.sh build_and_install_gpg stable
+    /opt/tools/tools.sh build_and_install_automake

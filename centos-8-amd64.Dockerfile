@@ -19,12 +19,8 @@ RUN dnf -y update && dnf -y install sudo wget git epel-release 'dnf-command(conf
     wget https://github.com/riboseinc/yum/raw/master/ribose.repo -O /etc/yum.repos.d/ribose.repo     && \
     dnf -y install json-c-devel clang gcc gcc-c++ make autoconf libtool gzip bzip2 bzip2-devel          \
                    gettext-devel ncurses-devel zlib-devel python3 asciidoctor botan2 botan2-devel       \
-                   openssl-devel bison byacc cmake
+                   openssl-devel bison byacc cmake gpg
 
 RUN /opt/tools/tools.sh ensure_symlink_to_target '/usr/bin/python3' '/usr/bin/python' && \
     /opt/tools/tools.sh build_and_install_automake                                    && \
     /opt/tools/tools.sh build_and_install_libiconv
-
-RUN /opt/tools/tools.sh build_and_install_gpg stable && \
-    /opt/tools/tools.sh build_and_install_gpg lts    && \
-    /opt/tools/tools.sh build_and_install_gpg 2.3.1
