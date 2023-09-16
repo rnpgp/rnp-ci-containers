@@ -43,54 +43,56 @@ However, under two circumstances custom requirements need to be supported:
 This repository created images that support two cases listed above
 
 
-[cols="a,a,a,a,a,a,a"]
+[cols="a,a,a,a,a"]
 |===
-| image                 | json-c version    | json-c source  | botan version  | botan source | gpg version | gpg source
+| image                 | botan version  | botan source | gpg version | gpg source
 
 | debian-10-i386
-| 0.12.1
-| system-shipped
 | 2.18.2
 | local build @ /usr/local
 | 2.2.12
 | system shipped
 
 | debian-11-i386/amd64
-| 0.12.1
-| system-shipped
 | 2.18.2
 | local build @ /usr/local
 | 2.2.27
 | system shipped
 
 | centos-7-amd64
-| json-c12 (0.12.1)
-| ribose repo
 | 2.16.0
 | ribose repo
 | 2.0.22
 | system shipped
 
 | centos-8-amd64
-| 0.13.1
-| system-shipped
 | 2.16.0
 | ribose repo
 | 2.2.20
 | system shipped
 
 | centos-9-amd64
-| 0.14
-| system shipped
 | 2.19.3
 | system shipped
 | 2.3.3
 | system shipped
 
 | fedora-3.5-amd64
-| 0.15
-| system shipped
 | 2.18.2
 | system shipped
 | 2.3.4
 | system shipped
+
++3.| fedora-3.6-amd64
++2.| 2.19.1
++2.| system shipped
+| 2.3.7
+| system shipped
+
+| 3.1.1
+| local build @ /opt/botan/3.1.1
+| stable (2.4.3)
+| local build @ /opt/gpg/stable
+
+| lts (2.2.41)
+| local build @ /opt/gpg/lts

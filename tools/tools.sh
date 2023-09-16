@@ -255,21 +255,18 @@ build_and_install_gpg() {
 
     # shellcheck disable=SC2153
   case "${GPG_VERSION}" in
+    head)
+      #                               npth      libgpg-error   libgcrypt  libassuan libksba pinentry gnupg
+      _install_gpg component-git-ref npth-1.6     master         master    master   master   master  master
+
+      ;;
     stable)
       #                              npth libgpg-error libgcrypt libassuan libksba pinentry gnupg
-      _install_gpg component-version 1.6  1.46         1.10.1     2.5.5     1.6.3  1.2.1    2.4.0
+      _install_gpg component-version 1.6  1.47         1.10.2     2.5.6     1.6.4  1.2.1    2.4.3
       ;;
     lts)
       #                              npth libgpg-error libgcrypt libassuan libksba pinentry gnupg
       _install_gpg component-version 1.6  1.46         1.8.10     2.5.5     1.6.3   1.2.1   2.2.41
-      ;;
-    #beta)
-      #                              npth    libgpg-error libgcrypt libassuan libksba pinentry gnupg
-      #_install_gpg component-git-ref 2501a48 f73605e      d9c4183   909133b   3df0cd3 0e2e53c  c6702d7
-      #;;
-    "2.3.1")
-      #                              npth libgpg-error libgcrypt libassuan libksba pinentry gnupg
-      _install_gpg component-version 1.6  1.42         1.9.3     2.5.5     1.6.0   1.1.1    2.3.1
       ;;
     *)
       >&2 echo "\$GPG_VERSION is set to invalid value: ${GPG_VERSION}"
