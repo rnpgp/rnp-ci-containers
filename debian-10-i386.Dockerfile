@@ -7,6 +7,7 @@ ENV LC_LANG=.UTF-8
 ENV ARCH=ia32
 ENV CPU=i386
 ENV OS=linux
+ENV LD_LIBRARY_PATH=/usr/local/lib
 
 ARG CC=gcc
 ARG CXX=g++
@@ -17,16 +18,6 @@ RUN apt-get update  &&                                                \
     apt-get -y install git sudo wget bash software-properties-common  \
            build-essential gettext libbz2-dev libssl-dev  pkg-config  \
            zlib1g-dev autoconf automake libtool asciidoctor clang gpg
-
-# Using system-shipped version of gpg (2.1.2)
-# Otherwise
-#   apt-get install curl
-#   /opt/tools/tools.sh build_and_install_gpg <version>
-#   selected version will be installed to /opt/gpg/<version>
-#
-#   for example, /opt/tools/tools.sh build_and_install_gpg stable
-#   installs to /opt/gpg/stable
-#
 
 RUN /opt/tools/tools.sh install_cmake                   &&  \
     /opt/tools/tools.sh build_and_install_automake      &&  \

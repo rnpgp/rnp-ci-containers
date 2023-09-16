@@ -8,7 +8,7 @@ Scripts naming follows the pattern
 
 [source]
 -----
-<operating system>-<version>-<cpu family>.Dockerfile
+<operating system>-<version>.Dockerfile
 -----
 
 for example,
@@ -22,17 +22,17 @@ Containers' tags follow the pattern
 
 [source]
 -----
-ci-rnp-<operating system>-<version>-<cpu family>-<cc setting>
+ci-rnp-<operating system>-<version>-<cpu family>
 -----
 
 for example,
 [source]
 
 -----
-ci-rnp-debian-11-i386-clang
+ci-rnp-debian-11-i386
 -----
 
-## Applicability
+## Image specification
 
 RNP CI normally uses system shipped versions of dependencies.
 However, under two circumstances custom requirements need to be supported:
@@ -40,4 +40,78 @@ However, under two circumstances custom requirements need to be supported:
 * some legacy environments provide only versions that are not supported by rnp
 * someties RNP needs to be tested with versions that differ from provided by ststem packages
 
-This repository supports two cases listed above
+This repository created images that support two cases listed above
+
+
+[cols="a,a,a,a,a,a,a,a,a"]
+|===
+| image                 | json-c version    | json-c source  | botan version  | botan source | botan install folder | gpg version | gpg source  | gpg`install folder
+
+| debian-10-i386
+| 0.12.1
+| system-shipped
+| 2.18.2
+| local build
+| /usr/local
+| 2.2.12
+| system shipped | /usr
+
+| debian-11-i386/amd64
+| 0.12.1
+| system-shipped
+| 2.18.2
+| local build
+| /usr/local
+| 2.2.27
+| system shipped
+| /usr
+
+.2+| centos-7-amd64
+.2+| json-c12 (0.12.1)
+.2+| ribose repo
+.2+| 2.16.0
+.2+| ribose repo
+.2+| /usr
+| 2.0.22
+| system shipped
+| /usr
+
+| stable (2.4.0)
+| local build
+| /opt/gpg/stable
+
+.4+| centos-8-amd64
+.4+| 0.13.1
+.4+| system-shipped
+.4+| 2.16.0
+.4+| ribose repo
+.4+| /usr
+| 2.2.20
+| system shipped
+| /usr
+
+| stable (2.4.0)
+| local build
+| /opt/gpg/stable
+
+| lts (2.2.41)
+| local build
+| /opt/gpg/lts
+
+| 2.3.1
+| local build
+| /opt/gpg/2.3.1
+
+.2+| centos-9-amd64
+.2+| 0.14
+.2+| system shipped
+.2+| 2.19.3
+.2+| system shipped
+.2+| /usr
+| 2.3.3
+| system shipped
+| /usr
+
+| stable (2.4.0)
+| local build
+| /opt/gpg/stable

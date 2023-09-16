@@ -12,15 +12,16 @@ ARG CXX=g++
 
 COPY tools /opt/tools
 
-RUN yum -y update                                                                                    && \
-    yum -y install sudo wget git                                                                     && \
-    rpm --import https://github.com/riboseinc/yum/raw/master/ribose-packages.pub                     && \
-    rpm --import https://github.com/riboseinc/yum/raw/master/ribose-packages-next.pub                && \
-    wget https://github.com/riboseinc/yum/raw/master/ribose.repo -O /etc/yum.repos.d/ribose.repo     && \
-    yum -y install epel-release centos-release-scl centos-sclo-rh                                    && \
-    yum -y update                                                                                    && \
-    yum -y install llvm-toolset-7.0 json-c12-devel clang gcc gcc-c++ make autoconf libtool gzip         \
-                   bzip2 bzip2-devel gettext-devel ncurses-devel zlib-devel python3 asciidoctor         \
+RUN yum -y install http://opensource.wandisco.com/centos/7/git/x86_64/wandisco-git-release-7-2.noarch.rpm   && \
+    yum -y update                                                                                           && \
+    yum -y install sudo wget git                                                                            && \
+    rpm --import https://github.com/riboseinc/yum/raw/master/ribose-packages.pub                            && \
+    rpm --import https://github.com/riboseinc/yum/raw/master/ribose-packages-next.pub                       && \
+    wget https://github.com/riboseinc/yum/raw/master/ribose.repo -O /etc/yum.repos.d/ribose.repo            && \
+    yum -y install epel-release centos-release-scl centos-sclo-rh                                           && \
+    yum -y update                                                                                           && \
+    yum -y install llvm-toolset-7.0 json-c12-devel clang gcc gcc-c++ make autoconf libtool gzip                \
+                   bzip2 bzip2-devel gettext-devel ncurses-devel zlib-devel python3 asciidoctor                \
                    botan2 botan2-devel openssl-devel bison byacc
 
 RUN /opt/tools/tools.sh ensure_symlink_to_target '/usr/bin/python3' '/usr/bin/python'               && \
