@@ -3,9 +3,9 @@ name: build-containers
 on:
   push:
 #    branches: [ main ]
+#    paths-ignore:
+#      - '**.adoc'
     tags:     [ 'v*' ]
-    paths-ignore:
-      - '**.adoc'
   pull_request:
   workflow_dispatch:
 

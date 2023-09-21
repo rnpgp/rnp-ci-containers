@@ -22,7 +22,7 @@ Containers' tags follow the pattern
 
 [source]
 -----
-ci-rnp-<operating system>-<version>-<cpu family>
+ci-rnp-<operating system>-<version>
 -----
 
 for example,
@@ -42,6 +42,7 @@ However, under two circumstances custom requirements need to be supported:
 
 This repository created images that support two cases listed above
 
+### Pre-installed versions of gnugp and json-c and botan libraries
 
 [cols="a,a,a,a,a"]
 |===
@@ -128,3 +129,50 @@ This repository created images that support two cases listed above
 | local build @ /opt/botan/3.1.1
 | lts (2.2.41)
 | local build @ /opt/gpg/lts
+
+|===
+
+### Helper script
+
+All images include helper script placed at /opt/tools/tools.sh
+This script supports the following actions
+
+#### /opt/tools/tools.sh build_and_install_botan [<botan version selector>]
+
+Builds and installs specified botan version. _botan version selector_ is any tag or branch that can be used by _git checkout_ 
+Specified bitan version is installed to _/opt/botan/<botan version selector>_
+
+There are two special cases. 
+If _<botan version selector>_ is _'head'_ the script uses _'master'_ for checkout
+If _<botan version selector>_ is omitted, the script build default botan version (2.18.2) and installs it to _/usr/local_
+
+#### /opt/tools/tools.sh build_and_install_gpg [<gpg version selector>]
+
+Builds and installs specified gpg version. _gpg version selector_ can be _head_, _stable_ or _lts_ only. 
+Build is performed using the script from  _https://github.com/rnpgp/gpg-build-scripts_ and specification below
+[cols="a,a,a,a,a,a,a,a"]
+|===
+| selector | npth        | libgpg-error | libgcrypt | libassuan | libksba | pinentry | gnupg
+
+| head (uses git references)    | npth-1.6    | master       | master    | master    | master  | master   | master
+
+| stable   | 1.6         | 1.47         | 1.10.2    | 2.5.6     | 1.6.4   | 1.2.1    | 2.4.3
+
+| lts      | 1.6         | 1.46         | 1.8.10    | 2.5.5     | 1.6.3   | 1.2.1    | 2.2.41
+      
+|===
+
+#### select_crypto_backend_for_gha [botan | openssl]
+
+Configures GHA environmetn to use specified crypto backend. This configuration takes effect from the next job step only
+
+#### select_gpg_version_for_gha [<gpg version selector>]
+
+Configures GHA environmetn to use specified version of _botan_. This configuration takes effect from the next job step only
+_<gpg version selector>_ is either selector used by _build_and_install_gpg_ or _'system'_
+
+#### select_botan_version_for_gha [<botan version selector>]
+
+Configures GHA environmetn to use specified version of _botan_. This configuration takes effect from the next job step only
+_<botan version selector>_ is either selector used by _build_and_install_botan_ or _'system'_
+

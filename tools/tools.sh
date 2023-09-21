@@ -226,9 +226,6 @@ _install_gpg() {
     local name="${component%:*}"
     local version="${component#*:}"
 
-  # Always build GnuPG with gcc, even if we are testing clang
-  # ref https://github.com/rnpgp/rnp/issues/1669
-
     env CC="gcc" CXX="g++" ./install_gpg_component.sh         \
                               --component-name "$name"        \
                               --"$VERSION_SWITCH" "$version"  \
