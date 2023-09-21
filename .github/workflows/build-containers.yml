@@ -2,8 +2,10 @@ name: build-containers
 
 on:
   push:
-    branches: [ main, centos-containers ]
+#    branches: [ main ]
     tags:     [ 'v*' ]
+    paths-ignore:
+      - '**.adoc'
   pull_request:
   workflow_dispatch:
 
@@ -13,7 +15,7 @@ concurrency:
 
 jobs:
   build-containers:
-    name: ${{ matrix.container }} [CC ${{ matrix.compiler.cc }}; GnuPG - system shipped]
+    name: ${{ matrix.container }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -25,8 +27,8 @@ jobs:
           - 'centos-7-amd64'
           - 'centos-8-amd64'
           - 'centos-9-amd64'
-          - 'fedora-3.5-amd64'
-          - 'fedora-3.6-amd64'
+          - 'fedora-35-amd64'
+          - 'fedora-36-amd64'
           - 'debian-11-amd64'
           - 'debian-11-i386'
           - 'debian-10-i386'
@@ -58,7 +60,7 @@ jobs:
         continue-on-error: true
         uses: actions/delete-package-versions@v4
         with:
-          package-name: 'ci-rnp-${{ matrix.container }}-${{ matrix.compiler.cc }}'
+          package-name: 'ci-rnp-${{ matrix.container }}'
           package-type: 'container'
           min-versions-to-keep: 1
           delete-only-untagged-versions: 'true'

@@ -7,6 +7,7 @@ ENV LC_LANG=.UTF-8
 ENV ARCH=x64
 ENV CPU=x86_64
 ENV OS=linux
+# For default botan version (2.18.2)
 ENV LD_LIBRARY_PATH=/usr/local/lib
 
 ARG CC=gcc
