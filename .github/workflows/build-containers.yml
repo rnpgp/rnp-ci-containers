@@ -41,7 +41,7 @@ jobs:
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
         with:
           registry: ghcr.io
-          username: ${{ github.actor }}
+          username: rnpgp
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Docker image
@@ -50,7 +50,7 @@ jobs:
           context: .
           file: ./${{ matrix.container }}.Dockerfile
           push: ${{ contains(github.ref, 'refs/tags/v') }}
-          tags: ghcr.io/${{ github.actor }}/ci-rnp-${{ matrix.container }}
+          tags: ghcr.io/rnpgp/ci-rnp-${{ matrix.container }}
           labels: |
             latest
             "org.opencontainers.image.source=${{ github.repositoryUrl }}"
