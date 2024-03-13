@@ -22,4 +22,6 @@ RUN dnf -y update                                                               
 RUN /opt/tools/tools.sh build_and_install_libiconv                                                  && \
     /opt/tools/tools.sh build_and_install_gpg lts                                                   && \
     /opt/tools/tools.sh build_and_install_gpg stable                                                && \
-    /opt/tools/tools.sh build_and_install_botan 3.1.1
+    /opt/tools/tools.sh build_and_install_botan 3.1.1                                               && \
+    /opt/tools/tools.sh build_and_install_botan 3.2.0                                               && \
+    /opt/tools/tools.sh build_and_install_botan 3.3.0
