@@ -111,6 +111,19 @@ build_and_install_jsonc() {
     rm -rf "${jsonc_build}"
 }
 
+botan_has_pqc_support() {
+  # Check whether version is in numeric format
+  if ! echo "$1" | grep -qE '^[0-9]+(\.[0-9]+)+$'; then
+      return 1
+  fi
+  # Check whether botan version >= 3.2.0
+  if [ "$(printf "3.2.0\n%s" "$1" | sort -V | head -n1)" = "3.2.0" ]; then
+      return 0
+  else
+      return 1
+  fi  
+}
+
 build_and_install_botan() {
   BOTAN_VERSION="${1:-system}"
 
@@ -139,8 +152,13 @@ build_and_install_botan() {
   local osparam=()
   local cpuparam=()
   local osslparam=()
-  local modules=$(cat "$DIR_TOOLS"/botan3-modules | tr '\n' ',')
-  [[ "${botan_v}" == "2" ]] && osslparam+=("--without-openssl") && modules=$(cat "$DIR_TOOLS"/botan-modules | tr '\n' ',')
+  local modules
+  if botan_has_pqc_support "${BOTAN_VERSION}"; then
+      modules=$(tr '\n' ',' < "${DIR_TOOLS}/botan3-pqc-modules")
+  else
+      modules=$(tr '\n' ',' < "${DIR_TOOLS}/botan3-modules")
+  fi
+  [[ "${botan_v}" == "2" ]] && osslparam+=("--without-openssl") && modules=$(tr '\n' ',' < "${DIR_TOOLS}/botan-modules")
 
 
   echo "Building botan with modules: ${modules}"
