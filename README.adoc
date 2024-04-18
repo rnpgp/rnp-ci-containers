@@ -155,6 +155,20 @@ This repository created images that support two cases listed above
 | lts (2.2.41)
 | local build @ /opt/gpg/lts
 
+.4+| fedora-39-amd64
+| 2.19.3
+| system shipped
+| 2.4.4
+| system shipped
+
+.2+| 3.4.0
+.2+| local build @ /opt/botan/3.4.0
+| stable (2.4.3)
+| local build @ /opt/gpg/stable
+
+| lts (2.2.41)
+| local build @ /opt/gpg/lts
+
 |===
 
 ### Helper script
