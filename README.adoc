@@ -38,7 +38,7 @@ RNP CI normally uses system shipped versions of dependencies.
 However, under two circumstances custom requirements need to be supported:
 
 * some legacy environments provide only versions that are not supported by rnp
-* someties RNP needs to be tested with versions that differ from provided by ststem packages
+* sometimes RNP needs to be tested with versions that differ from provided by system packages
 
 This repository created images that support two cases listed above
 
@@ -64,6 +64,12 @@ This repository created images that support two cases listed above
 | 2.18.2
 | local build @ /usr/local
 | 2.2.27
+| system shipped
+
+| debian-12-amd64
+| 2.19.3
+| system shipped
+| 2.2.40
 | system shipped
 
 .3+| centos-7-amd64
@@ -164,15 +170,15 @@ Build is performed using the script from  _https://github.com/rnpgp/gpg-build-sc
 
 #### select_crypto_backend_for_gha [botan | openssl]
 
-Configures GHA environmetn to use specified crypto backend. This configuration takes effect from the next job step only
+Configures GHA environment to use specified crypto backend. This configuration takes effect from the next job step only
 
 #### select_gpg_version_for_gha [<gpg version selector>]
 
-Configures GHA environmetn to use specified version of _botan_. This configuration takes effect from the next job step only
+Configures GHA environment to use specified version of _botan_. This configuration takes effect from the next job step only
 _<gpg version selector>_ is either selector used by _build_and_install_gpg_ or _'system'_
 
 #### select_botan_version_for_gha [<botan version selector>]
 
-Configures GHA environmetn to use specified version of _botan_. This configuration takes effect from the next job step only
+Configures GHA environment to use specified version of _botan_. This configuration takes effect from the next job step only
 _<botan version selector>_ is either selector used by _build_and_install_botan_ or _'system'_
 
