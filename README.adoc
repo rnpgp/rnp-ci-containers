@@ -122,17 +122,36 @@ This repository created images that support two cases listed above
 | lts (2.2.41)
 | local build @ /opt/gpg/lts
 
-.3+| fedora-36-amd64
-.2+| 2.19.1
-.2+| system shipped
+.4+| fedora-36-amd64
+| 2.19.1
+| system shipped
 | 2.3.7
 | system shipped
 
+| 3.1.1
+| local build @ /opt/botan/3.1.1
 | stable (2.4.3)
 | local build @ /opt/gpg/stable
 
-| 3.1.1
-| local build @ /opt/botan/3.1.1
+| 3.2.0
+| local build @ /opt/botan/3.2.0
+.2+| lts (2.2.41)
+.2+| local build @ /opt/gpg/lts
+
+| 3.3.0
+| local build @ /opt/botan/3.3.0
+
+.4+| fedora-38-amd64
+| 2.19.3
+| system shipped
+| 2.4.0
+| system shipped
+
+.2+| 3.4.0
+.2+| local build @ /opt/botan/3.4.0
+| stable (2.4.3)
+| local build @ /opt/gpg/stable
+
 | lts (2.2.41)
 | local build @ /opt/gpg/lts
 
