@@ -270,11 +270,11 @@ build_and_install_gpg() {
       ;;
     stable)
       #                              npth libgpg-error libgcrypt libassuan libksba pinentry gnupg
-      _install_gpg component-version 1.6  1.47         1.10.2     2.5.6     1.6.4  1.2.1    2.4.3
+      _install_gpg component-version 1.7  1.48         1.10.3     2.5.7     1.6.6  1.3.0    2.4.5
       ;;
     lts)
       #                              npth libgpg-error libgcrypt libassuan libksba pinentry gnupg
-      _install_gpg component-version 1.6  1.46         1.8.10     2.5.5     1.6.3   1.2.1   2.2.41
+      _install_gpg component-version 1.6  1.48         1.8.10     2.5.5     1.6.3   1.2.1   2.2.43
       ;;
     *)
       >&2 echo "\$GPG_VERSION is set to invalid value: ${GPG_VERSION}"
