@@ -143,7 +143,7 @@ Currently built gpg versions are 2.2.43 for lts, and 2.4.5 for stable.
 | 3.3.0
 | local build @ /opt/botan/3.3.0
 
-.4+| fedora-38-amd64
+.3+| fedora-38-amd64
 | 2.19.3
 | system shipped
 | 2.4.0
@@ -157,7 +157,7 @@ Currently built gpg versions are 2.2.43 for lts, and 2.4.5 for stable.
 | lts
 | local build @ /opt/gpg/lts
 
-.4+| fedora-39-amd64
+.3+| fedora-39-amd64
 | 2.19.3
 | system shipped
 | 2.4.4
@@ -170,6 +170,18 @@ Currently built gpg versions are 2.2.43 for lts, and 2.4.5 for stable.
 
 | lts
 | local build @ /opt/gpg/lts
+
+| opensuse-leap
+| 2.19.3
+| system shipped
+| 2.2.27
+| system shipped
+
+| opensuse-tumbleweed
+| 2.19.3
+| system shipped
+| 2.4.5
+| system shipped
 
 |===
 
