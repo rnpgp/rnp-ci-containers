@@ -35,6 +35,8 @@ jobs:
           - 'debian-12-amd64'
           - 'debian-11-i386'
           - 'debian-10-i386'
+          - 'opensuse-leap'
+          - 'opensuse-tumbleweed'
 
     steps:
       - name: Checkout
