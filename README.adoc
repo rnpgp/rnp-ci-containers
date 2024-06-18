@@ -86,71 +86,12 @@ Currently built gpg versions are 2.2.43 for lts, and 2.4.5 for stable.
 | lts
 | local build @ /opt/gpg/lts
 
-.3+| centos-8-amd64
-.2+| 2.16.0
-.2+| ribose repository
-| 2.2.20
-| system shipped
-
-| stable
-| local build @ /opt/gpg/stable
-
-| 2.18.2
-| local build @ /opt/botan/2.18.2
-| lts
-| local build @ /opt/gpg/lts
-
 .3+| centos-9-amd64
 .3+| 2.19.3
 .3+| system shipped
 | 2.3.3
 | system shipped
 
-| stable
-| local build @ /opt/gpg/stable
-
-| lts
-| local build @ /opt/gpg/lts
-
-.3+| fedora-35-amd64
-.3+| 2.18.2
-.3+| system shipped
-| 2.3.4
-| system shipped
-
-| stable
-| local build @ /opt/gpg/stable
-
-| lts
-| local build @ /opt/gpg/lts
-
-.4+| fedora-36-amd64
-| 2.19.1
-| system shipped
-| 2.3.7
-| system shipped
-
-| 3.1.1
-| local build @ /opt/botan/3.1.1
-| stable
-| local build @ /opt/gpg/stable
-
-| 3.2.0
-| local build @ /opt/botan/3.2.0
-.2+| lts
-.2+| local build @ /opt/gpg/lts
-
-| 3.3.0
-| local build @ /opt/botan/3.3.0
-
-.3+| fedora-38-amd64
-| 2.19.3
-| system shipped
-| 2.4.0
-| system shipped
-
-.2+| 3.4.0
-.2+| local build @ /opt/botan/3.4.0
 | stable
 | local build @ /opt/gpg/stable
 
@@ -170,6 +111,28 @@ Currently built gpg versions are 2.2.43 for lts, and 2.4.5 for stable.
 
 | lts
 | local build @ /opt/gpg/lts
+
+.5+| fedora-40-amd64
+| 2.19.3
+| system shipped
+| 2.4.4
+| system shipped
+
+| 3.1.1
+| local build @ /opt/botan/3.1.1
+.2+| stable
+.2+| local build @ /opt/gpg/stable
+
+| 3.2.0
+| local build @ /opt/botan/3.2.0
+
+| 3.3.0
+| local build @ /opt/botan/3.3.0
+.2+| lts
+.2+| local build @ /opt/gpg/lts
+
+| 3.4.0
+| local build @ /opt/botan/3.4.0
 
 | opensuse-leap
 | 2.19.3
