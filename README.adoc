@@ -185,6 +185,26 @@ Currently built gpg versions are 2.2.43 for lts, and 2.4.5 for stable.
 
 |===
 
+### RHEL OpenSSL-only images
+
+[cols="a,a,a,a,a"]
+|===
+| image                 | openssl version | openssl source | gpg version | gpg source
+
+| RHEL 8 UBI
+| 1.1.1k
+| system shipped
+| 2.2.20
+| system shipped
+
+| RHEL 9 UBI
+| 3.0.7
+| system shipped
+| 2.3.3
+| system shipped
+
+|===
+
 ### Helper script
 
 All images include helper script placed at /opt/tools/tools.sh
