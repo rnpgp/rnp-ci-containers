@@ -35,6 +35,7 @@ jobs:
           - 'opensuse-leap'
           - 'opensuse-tumbleweed'
           - 'redhat-8-ubi'
+          - 'redhat-9-ubi'
 
     steps:
       - name: Checkout
