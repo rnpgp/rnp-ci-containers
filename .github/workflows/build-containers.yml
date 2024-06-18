@@ -34,6 +34,7 @@ jobs:
           - 'debian-12-i386'
           - 'opensuse-leap'
           - 'opensuse-tumbleweed'
+          - 'redhat-8-ubi'
 
     steps:
       - name: Checkout
