@@ -111,13 +111,10 @@ build_and_install_jsonc() {
     rm -rf "${jsonc_build}"
 }
 
-botan_has_pqc_support() {
-  # Check whether version is in numeric format
-  if ! echo "$1" | grep -qE '^[0-9]+(\.[0-9]+)+$'; then
-      return 1
-  fi
-  # Check whether botan version >= 3.2.0
-  if [ "$(printf "3.2.0\n%s" "$1" | sort -V | head -n1)" = "3.2.0" ]; then
+botan_version_at_least() {
+  # Check whether botan version >= 3.2.0.
+  # Head would be always after any existing version
+  if [ "$(printf "$2\n%s" "$1" | sort -V | head -n1)" = "$2" ]; then
       return 0
   else
       return 1
@@ -143,7 +140,6 @@ build_and_install_botan() {
 
   echo "Running build_and_install_botan version ${BOTAN_VERSION} (installing to ${BOTAN_INSTALL})"
 
-  local botan_v=${BOTAN_VERSION::1}
   local botan_build=${LOCAL_BUILDS}/botan
 
   git clone --depth 1 --branch "${BOTAN_VERSION}" https://github.com/randombit/botan "${botan_build}"
@@ -153,13 +149,18 @@ build_and_install_botan() {
   local cpuparam=()
   local osslparam=()
   local modules
-  if botan_has_pqc_support "${BOTAN_VERSION}"; then
-      modules=$(tr '\n' ',' < "${DIR_TOOLS}/botan3-pqc-modules")
-  else
+  if ! botan_version_at_least "${BOTAN_VERSION}" "3.0.0"; then
+      osslparam+=("--without-openssl")
+      modules=$(tr '\n' ',' < "${DIR_TOOLS}/botan-modules")
+  elif ! botan_version_at_least "${BOTAN_VERSION}" "3.2.0"; then
       modules=$(tr '\n' ',' < "${DIR_TOOLS}/botan3-modules")
+  elif ! botan_version_at_least "${BOTAN_VERSION}" "3.5.0"; then
+      modules=$(tr '\n' ',' < "${DIR_TOOLS}/botan3.2-modules")
+  elif ! botan_version_at_least "${BOTAN_VERSION}" "3.7.0"; then
+      modules=$(tr '\n' ',' < "${DIR_TOOLS}/botan3.5-modules")
+  else
+      modules=$(tr '\n' ',' < "${DIR_TOOLS}/botan3.7-modules")
   fi
-  [[ "${botan_v}" == "2" ]] && osslparam+=("--without-openssl") && modules=$(tr '\n' ',' < "${DIR_TOOLS}/botan-modules")
-
 
   echo "Building botan with modules: ${modules}"
 
