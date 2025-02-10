@@ -24,7 +24,6 @@ jobs:
       fail-fast: false
       matrix:
         container:
-          - 'centos-7-amd64'
           - 'centos-9-amd64'
           - 'fedora-39-amd64'
           - 'fedora-40-amd64'
