@@ -68,10 +68,28 @@ Currently built gpg versions are 2.2.43 for lts, and 2.4.5 for stable.
 | 2.2.27
 | system shipped
 
+| debian-12-i386
+| 2.19.3
+| system shipped
+| 2.2.40
+| system shipped
+
 | debian-12-amd64
 | 2.19.3
 | system shipped
 | 2.2.40
+| system shipped
+
+| debian-13-i386
+| 2.19.5 and 3.7.1
+| system shipped
+| 2.4.7
+| system shipped
+
+| debian-13-amd64
+| 2.19.5 and 3.7.1
+| system shipped
+| 2.4.7
 | system shipped
 
 .3+| centos-9-amd64
