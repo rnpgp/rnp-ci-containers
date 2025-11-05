@@ -166,9 +166,9 @@ Currently built gpg versions are 2.2.43 for lts, and 2.4.5 for stable.
 | system shipped
 
 | opensuse-tumbleweed
-| 2.19.3
+| 3.9.0
 | system shipped
-| 2.4.5
+| 2.5.13
 | system shipped
 
 |===
