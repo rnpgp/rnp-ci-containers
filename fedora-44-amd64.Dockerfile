@@ -15,7 +15,7 @@ COPY tools /opt/tools
 RUN dnf -y update                                                                                 && \
     dnf -y install sudo wget git openssl-devel bison byacc cmake python perl-Digest-SHA              \
                    json-c-devel clang gcc gcc-c++ make autoconf libtool gzip bzip2 bzip2-devel       \
-                   gettext-devel ncurses-devel zlib-devel asciidoctor llvm gpg pkgconf-pkg-config    \
+                   gettext-devel ncurses-devel zlib-devel asciidoctor llvm gpg pkgconf-pkg-config util-linux shadow-utils    \
                    botan2 botan2-devel botan3 botan3-devel
 
 RUN /opt/tools/tools.sh ensure_symlink_to_target '/usr/bin/python3' '/usr/bin/python'
