@@ -1,4 +1,4 @@
-FROM i386/debian:13
+FROM --platform=linux/386 debian:13
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=C.UTF-8
