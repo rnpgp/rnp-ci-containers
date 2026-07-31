@@ -12,7 +12,23 @@ set -o errexit -o pipefail -o noclobber -o nounset
 : "${DEFAULT_BOTAN_VERSION:=2.18.2}"
 : "${DEFAULT_GPG_VERSION:=stable}"
 
-MAKE_PARALLEL="$(nproc --all)"
+MAKE_PARALLEL="$(nproc --all 2>/dev/null || nproc 2>/dev/null || echo 1)"
+
+# Prefer runtime machine arch over image ENV (multi-arch images may bake amd64 defaults).
+case "$(uname -m)" in
+  x86_64|amd64)  ARCH=x64;    CPU=x86_64  ;;
+  aarch64|arm64) ARCH=arm64;  CPU=aarch64 ;;
+  i386|i686)     ARCH=ia32;   CPU=i386    ;;
+  *)
+    : "${ARCH:=}"
+    : "${CPU:=}"
+    if [[ -z "${ARCH}" || -z "${CPU}" ]]; then
+      >&2 echo "Unsupported machine $(uname -m); set ARCH and CPU explicitly."
+      exit 1
+    fi
+    ;;
+esac
+
 
 is_use_static_dependencies() {
   [[ -n "${USE_STATIC_DEPENDENCIES}" ]] && \

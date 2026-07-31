@@ -92,6 +92,12 @@ Currently built gpg versions are 2.2.43 for lts, and 2.4.5 for stable.
 | 2.4.7
 | system shipped
 
+| debian-sid-amd64
+| botan3 (latest)
+| system shipped
+| latest
+| system shipped
+
 .3+| centos-9-amd64
 .3+| 2.19.3
 .3+| system shipped
@@ -159,6 +165,30 @@ Currently built gpg versions are 2.2.43 for lts, and 2.4.5 for stable.
 | 3.7.1
 | local build @ /opt/botan/3.7.1
 
+| fedora-43-amd64
+| botan2 (latest)
+| system shipped
+| latest
+| system shipped
+
+| fedora-44-amd64
+| botan2 + botan3 (latest)
+| system shipped
+| latest
+| system shipped
+
+| fedora-rawhide-amd64
+| botan3 (latest)
+| system shipped
+| latest
+| system shipped
+
+| alpine-edge-amd64
+| botan3 (latest)
+| system shipped
+| latest
+| system shipped
+
 | opensuse-leap
 | 2.19.3
 | system shipped
@@ -166,9 +196,15 @@ Currently built gpg versions are 2.2.43 for lts, and 2.4.5 for stable.
 | system shipped
 
 | opensuse-tumbleweed
-| 3.9.0
+| botan3 (latest)
 | system shipped
-| 2.5.13
+| latest
+| system shipped
+
+| opensuse-tumbleweed-amd64
+| botan3 (latest)
+| system shipped
+| latest
 | system shipped
 
 |===
