@@ -44,7 +44,7 @@ This repository created images that support two cases listed above
 
 Currently built gpg versions are 2.2.43 for lts, and 2.4.5 for stable.
 
-### Pre-installed versions of gnugp and json-c and botan libraries
+### Pre-installed versions of gnupg and json-c and botan libraries
 
 [cols="a,a,a,a,a"]
 |===
