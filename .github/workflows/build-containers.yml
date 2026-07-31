@@ -17,6 +17,7 @@ jobs:
   build-containers:
     name: ${{ matrix.container }}
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: read
       packages: write
@@ -40,7 +41,6 @@ jobs:
           - 'fedora-44-amd64'
           - 'fedora-rawhide-amd64'
           - 'opensuse-leap'
-          - 'opensuse-tumbleweed'
           - 'opensuse-tumbleweed-amd64'
           - 'redhat-8-ubi'
           - 'redhat-9-ubi'
