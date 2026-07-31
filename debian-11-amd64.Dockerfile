@@ -7,7 +7,7 @@ ENV LC_LANG=.UTF-8
 ENV ARCH=x64
 ENV CPU=x86_64
 ENV OS=linux
-# For default botan version (2.18.2)
+# System botan 2.17.3
 ENV LD_LIBRARY_PATH=/usr/local/lib
 
 ARG CC=gcc
@@ -18,9 +18,8 @@ COPY tools /opt/tools
 RUN apt-get update  &&                                                              \
     apt-get -y install git sudo wget bash software-properties-common pkg-config     \
            build-essential gettext libbz2-dev libssl-dev zlib1g-dev                 \
-           python3 python3-venv autoconf automake libtool asciidoctor clang gpg
+           python3 python3-venv autoconf automake libtool asciidoctor clang gpg libbotan-2-dev
 
 RUN /opt/tools/tools.sh ensure_symlink_to_target '/usr/bin/python3' '/usr/bin/python' && \
     /opt/tools/tools.sh install_cmake                   &&  \
-    /opt/tools/tools.sh build_and_install_jsonc         &&  \
-    /opt/tools/tools.sh build_and_install_botan
+    /opt/tools/tools.sh build_and_install_jsonc
