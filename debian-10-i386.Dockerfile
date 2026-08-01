@@ -18,7 +18,7 @@ COPY tools /opt/tools
 RUN apt-get update  &&                                                \
     apt-get -y install git sudo wget bash software-properties-common  \
            build-essential gettext libbz2-dev libssl-dev  pkg-config  \
-           zlib1g-dev autoconf automake libtool asciidoctor clang gpg
+           zlib1g-dev autoconf automake libtool asciidoctor clang gpg ccache
 
 RUN /opt/tools/tools.sh install_cmake                   &&  \
     /opt/tools/tools.sh build_and_install_automake      &&  \

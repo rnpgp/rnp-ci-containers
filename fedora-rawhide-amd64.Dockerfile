@@ -15,7 +15,7 @@ COPY tools /opt/tools
 RUN dnf -y --setopt=tsflags=nodocs install sudo wget git openssl-devel bison byacc cmake python     \
                    perl-Digest-SHA json-c-devel clang gcc gcc-c++ make autoconf libtool gzip bzip2   \
                    bzip2-devel gettext-devel ncurses-devel zlib-devel asciidoctor llvm gpg           \
-                   pkgconf-pkg-config shadow-utils botan3 botan3-devel                               && \
+                   pkgconf-pkg-config shadow-utils botan3 botan3-devel ccache                               && \
     dnf -y install /usr/bin/su                                                                     && \
     dnf clean all
 
