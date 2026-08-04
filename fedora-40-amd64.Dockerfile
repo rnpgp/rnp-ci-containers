@@ -15,7 +15,8 @@ ARG CXX=g++
 RUN dnf -y update                                                                                 && \
     dnf -y install sudo wget git openssl-devel bison byacc cmake python perl-Digest-SHA              \
                    json-c-devel clang gcc gcc-c++ make autoconf libtool gzip bzip2 bzip2-devel       \
-                   gettext-devel ncurses-devel zlib-devel asciidoctor botan2 botan2-devel llvm ccache
+                   gettext-devel ncurses-devel zlib-devel asciidoctor botan2 botan2-devel llvm ccache && \
+    dnf clean all
 
 COPY tools /opt/tools
 

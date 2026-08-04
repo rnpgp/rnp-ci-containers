@@ -16,9 +16,10 @@ ARG CXX=g++
 COPY tools /opt/tools
 
 RUN apt-get update  &&                                                \
-    apt-get -y install git sudo wget bash software-properties-common  \
+    apt-get -y --no-install-recommends install git sudo wget bash software-properties-common  \
            build-essential gettext libbz2-dev libssl-dev  pkg-config  \
-           zlib1g-dev autoconf automake libtool asciidoctor clang gpg ccache
+           zlib1g-dev autoconf automake libtool asciidoctor clang gpg ccache &&  \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN /opt/tools/tools.sh install_cmake                   &&  \
     /opt/tools/tools.sh build_and_install_automake      &&  \

@@ -21,7 +21,8 @@ RUN wget https://github.com/riboseinc/yum/raw/master/ribose.repo -O /etc/yum.rep
 
 RUN dnf -y install clang gcc gcc-c++ make autoconf libtool gzip bzip2 bzip2-devel      \
                    json-c13-devel gettext ncurses-devel zlib-devel python3 asciidoctor \
-                   openssl openssl-devel cmake gpg perl-Digest-SHA ccache
+                   openssl openssl-devel cmake gpg perl-Digest-SHA ccache && \
+    dnf clean all
 
 # Fix json-c13.pc, see the issue https://github.com/riboseinc/yum/issues/10
 RUN sed -i 's|-I${includedir}/json-c$|-I${includedir}/json-c13|' /usr/lib64/pkgconfig/json-c13.pc
