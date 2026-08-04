@@ -17,4 +17,5 @@ COPY tools /opt/tools
 RUN zypper refresh
 RUN zypper -n install sudo wget git libopenssl-devel bison byacc automake cmake python3 \
               libjson-c-devel clang gcc gcc-c++ make autoconf libtool gzip bzip2 libbz2-devel \
-              gettext-tools ncurses-devel zlib-devel asciidoc libbotan-devel llvm gtest ccache
+              gettext-tools ncurses-devel zlib-devel asciidoc libbotan-devel llvm gtest ccache && \
+    zypper clean -a
