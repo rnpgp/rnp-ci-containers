@@ -20,7 +20,7 @@ COPY tools /opt/tools
 # "no such file or directory" (ELF interpreter missing).
 RUN dpkg --add-architecture amd64 && \
     apt-get update && \
-    apt-get -y --no-install-recommends install libc6:amd64 && \
+    apt-get -y --no-install-recommends install libc6:amd64 libstdc++6:amd64 && \
     rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update  &&                                                              \
