@@ -18,7 +18,7 @@ COPY tools /opt/tools
 RUN apt-get update  &&                                                              \
     apt-get -y --no-install-recommends install git sudo wget bash software-properties-common pkg-config     \
            build-essential gettext libbz2-dev libssl-dev zlib1g-dev                 \
-           python3 python3-venv autoconf automake libtool asciidoctor clang gpg libbotan-2-dev ccache &&  \
+           python3 python3-venv autoconf automake libtool asciidoctor clang gpg gpg-agent libbotan-2-dev ccache &&  \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN /opt/tools/tools.sh ensure_symlink_to_target '/usr/bin/python3' '/usr/bin/python' && \
