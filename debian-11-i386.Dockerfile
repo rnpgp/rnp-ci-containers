@@ -15,6 +15,14 @@ ARG CXX=g++
 
 COPY tools /opt/tools
 
+# Enable amd64 multiarch so GHA's amd64 node24 binary (mounted at /__e) can exec.
+# Without this, the i386 container has no 64-bit loader and node24 fails with
+# "no such file or directory" (ELF interpreter missing).
+RUN dpkg --add-architecture amd64 && \
+    apt-get update && \
+    apt-get -y --no-install-recommends install libc6:amd64 && \
+    rm -rf /var/lib/apt/lists/*
+
 RUN apt-get update  &&                                                              \
     apt-get -y --no-install-recommends install git sudo wget bash software-properties-common pkg-config     \
            build-essential gettext libbz2-dev libssl-dev zlib1g-dev                 \
